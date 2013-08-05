@@ -33,6 +33,7 @@ sub steps {
                 next unless $module;
                 install_module(
                     $module,
+                    local_lib   => '/home/cgranum/environment/build/opt/plack/perl',
                     auto_inject => $self->args->{auto_deps} || 0,
                     debug       => $self->args->{debug}     || 0,
                     from        => $self->args->{cpan} ? 'cpan' : 'mirror',

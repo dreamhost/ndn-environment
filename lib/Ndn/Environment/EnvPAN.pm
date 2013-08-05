@@ -2,6 +2,7 @@ package Ndn::Environment::EnvPAN;
 use strict;
 use warnings;
 
+use Config;
 use base 'Exporter';
 use Carp qw/croak confess/;
 
@@ -48,11 +49,11 @@ sub inject_module {
             my $src = $mod =~ '/' ? $mod : _module_url($mod);
 
             print "Injecting $mod...\n";
-            system("$inject --no-generate-index $src envpan >>/dev/null 2>&1") && die "$!";
+            system("$inject --no-generate-index $src envpan") && die $!;
         }
 
         print "Rebuilding index...\n";
-        system("$index envpan >>/dev/null 2>&1");
+        system("$index envpan") && die $!;
     };
 }
 
@@ -71,6 +72,9 @@ sub install_module {
         "--mirror=file://" . NDN_ENV->cwd . "/envpan",
     );
     #>>>
+
+    push @cpanm_args => "-L '$params{local_lib}'"
+        if $params{local_lib};
 
     run_in_config_env {
         local %ENV = ( %ENV, %{$params{env}})
@@ -97,7 +101,8 @@ sub install_module {
             $output .= $line;
             print $line if $params{debug};
 
-            next unless $line =~ m/Finding (\S+) \([^\)]*\) on mirror/;
+            next unless $line =~ m/Finding (\S+) \([^\)]*\) on mirror/
+                || $line =~ m/Installed version \([^\)]*\) of (\S+) is not in range/;
 
             push @need => $1;
         }

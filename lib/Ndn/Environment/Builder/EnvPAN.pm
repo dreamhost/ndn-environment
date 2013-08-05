@@ -34,22 +34,10 @@ sub steps {
             mkdir('envpan');
             mkdir('envpan/lib');
             mkdir('envpan/lib/perl5');
-            my $env = {
-                PERL_MB_OPT => "--install_base $cwd/envpan",
-                PERL_MM_OPT => "INSTALL_BASE=$cwd/envpan",
-                PERL5LIB    => join ':' => (
-                    "$cwd/envpan/lib/perl5",
-                    "$cwd/envpan/lib/perl5/x86_64-linux",
-                    "$perl_dir/lib/site_perl/$vers/x86_64-linux",
-                    "$perl_dir/lib/site_perl/$vers",
-                    "$perl_dir/lib/$vers/x86_64-linux",
-                    "$perl_dir/lib/$vers",
-                ),
-            };
 
             print "Bootstrapping envpan from cpan, these modules WILL NOT be added to your environment.\n";
-            install_module( 'OrePAN2',       from => 'cpan', env => $env );
-            install_module( 'MetaCPAN::API', from => 'cpan', env => $env );
+            install_module( 'OrePAN2',       from => 'cpan', local_lib => "$cwd/envpan");
+            install_module( 'MetaCPAN::API', from => 'cpan', local_lib => "$cwd/envpan");
 
             print "Adding your env_config.pm modules to envpan.\n";
             inject_module(@{config->{modules}});

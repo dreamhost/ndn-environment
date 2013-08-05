@@ -15,7 +15,7 @@ DESCRIPTION
     suited for production environments.
 
 COMPATABILITY
-    This module was assembled quickly to meet a need, as such many shortcust
+    This module was assembled quickly to meet a need, as such many shortcuts
     were taken. For example it makes many calls to the shell to munge files
     and move things around. Most of these shortcuts are compatible across
     linux distributions, but will undoubtedly break for windows. Some other
@@ -39,7 +39,7 @@ COMPATABILITY
 
 SYNOPSIS
   CLI USAGE
-   QUICK AND DIRTY
+    QUICK AND DIRTY
     Create a new environment build:
 
         $ ndn_env init my_env
@@ -63,7 +63,7 @@ SYNOPSIS
 
         $ ndn_env build package
 
-   ADDING MODULES
+    ADDING MODULES
     Ndn-Environment uses a local cpan mirror called envpan. envpan is built
     using OrePAN2. In order for a module to be installed to your environment
     it must be added to envpan. Any module listed in the config file will be
@@ -86,7 +86,7 @@ SYNOPSIS
     that after the first build your environment will always be consistent,
     modules will only be upgraded if you re-add them.
 
-   GETTING HELP
+    GETTING HELP
         # List commands:
         $ ndn_env help
 

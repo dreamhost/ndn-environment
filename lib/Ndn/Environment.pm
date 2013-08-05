@@ -151,7 +151,7 @@ environments.
 
 =head1 COMPATABILITY
 
-This module was assembled quickly to meet a need, as such many shortcust were
+This module was assembled quickly to meet a need, as such many shortcuts were
 taken. For example it makes many calls to the shell to munge files and move
 things around. Most of these shortcuts are compatible across linux
 distributions, but will undoubtedly break for windows. Some other shortcuts are

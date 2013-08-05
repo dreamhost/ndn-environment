@@ -146,8 +146,8 @@ perl, modules, and items of your choice into a 'build' that can then be easily
 packaged and distributed to your servers.
 
 Ndn-Environment has a goal of being like perlbrew for production environments.
-perlbrew is awesome for development, but is not currently suited for production
-environments.
+Perlbrew is awesome for development, but is not currently suited for all
+production environments (such as embedded perl with mod_perl or mod_psgi).
 
 =head1 COMPATABILITY
 

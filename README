@@ -11,8 +11,9 @@ DESCRIPTION
     servers.
 
     Ndn-Environment has a goal of being like perlbrew for production
-    environments. perlbrew is awesome for development, but is not currently
-    suited for production environments.
+    environments. Perlbrew is awesome for development, but is not currently
+    suited for all production environments (such as embedded perl with
+    mod_perl or mod_psgi).
 
 COMPATABILITY
     This module was assembled quickly to meet a need, as such many shortcuts

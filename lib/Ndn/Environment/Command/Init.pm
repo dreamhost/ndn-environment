@@ -1,0 +1,93 @@
+package Ndn::Environment::Command::Init;
+use strict;
+use warnings;
+
+use Ndn::Environment::CLI qw/command/;
+
+sub short_desc { "Initialize an Ndn::Environment directory" }
+sub usage      { "$0 init [PATH]\n\nPATH defaults to '.'" }
+
+my %FILES = (
+    source          => {},
+    'env_config.pm' => <<'    EOT',
+{
+    # Version of perl to download and use 
+    perl_version => undef, # Example: 5.16.3
+
+    # Add 'modpsgi' to this if you want it:
+    package_builds => [ qw/perl cpanm envpan modules/ ],
+
+    # Git repo or tarball for mod_psgi source
+    mod_psgi_src => undef,
+
+    # Packaging details:
+    package_type        => 'deb',
+    package_name        => "ndn-environment",
+    package_maintainer  => "nobody special",
+    package_description => "ndn-environment by nobody special.",
+    package_depends     => "",
+    package_version     => sub { time() }, # Set version to build timestamp 
+
+    # List of modules to build into the environment
+    modules => [
+        # Add your list of modules here:
+        'Test::More',
+    ],
+}
+    EOT
+);
+
+sub run {
+    my $self = shift;
+    my ($root) = @_;
+    $root ||= '.';
+
+    if ( !-e $root ) {
+        mkdir($root) || die "Could not create '$root': $!";
+    }
+
+    for my $path ( keys %FILES ) {
+        my $content = $FILES{$path};
+        $self->build_path(
+            join( '/', $root, $path ),
+            $content,
+        );
+    }
+
+    print "New Ndn-Environment directory initialized: $root\n";
+}
+
+sub build_path {
+    my $self = shift;
+    my ( $path, $content ) = @_;
+
+    if ( ref $content ) {
+        mkdir $path;
+        for my $subpath ( keys %$content ) {
+            $self->build_path(
+                join( '/', $path, $subpath ),
+                $content->{$subpath},
+            );
+        }
+    }
+    else {
+        open( my $file, '>', $path ) || die "Count not create '$path': $!";
+        print $file $content;
+        close($file);
+    }
+}
+
+1;
+
+__END__
+
+=head1 COPYRIGHT
+
+Copyright (C) 2013 New Dream Network LLC
+
+Ndn-Environment is free software; FreeBSD License
+
+NDN-Environment is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the license for more details.
+

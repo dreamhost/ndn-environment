@@ -1,0 +1,114 @@
+NAME
+    Ndn::Environment - Configure, Build and Package an encapsulated perl
+    production environment.
+
+DESCRIPTION
+    Ndn-Environment is a tool for building a consistent and controlled
+    production perl environment (with a focus on Plack/PSGI). You specify a
+    perl version, a list of modules, as well as other build items,
+    Ndn-Environment then builds the perl, modules, and items of your choice
+    into a 'build' that can then be easily packaged and distributed to your
+    servers.
+
+    Ndn-Environment has a goal of being like perlbrew for production
+    environments. perlbrew is awesome for development, but is not currently
+    suited for production environments.
+
+COMPATABILITY
+    This module was assembled quickly to meet a need, as such many shortcust
+    were taken. For example it makes many calls to the shell to munge files
+    and move things around. Most of these shortcuts are compatible across
+    linux distributions, but will undoubtedly break for windows. Some other
+    shortcuts are ubuntu specific.
+
+    The ModPSGI build task assumes ubuntu's apache2 and apache2-prefork-dev
+    modules are used.
+
+    This code is being released into the open-source community in hopes that
+    other people may find it useful. It is hoped that others may contribute
+    work to make this package build production environments across many
+    distributions, or even operating systems.
+
+    Part of the quick assembly also means that only minimal unit testing has
+    been written. Most of the code is difficult to unit test as it depends
+    on shell commands. This is not an ideal situation, and will be rectified
+    in the future.
+
+    In the end this is a script that outgrew its status as a script and
+    became a build system.
+
+SYNOPSIS
+  CLI USAGE
+   QUICK AND DIRTY
+    Create a new environment build:
+
+        $ ndn_env init my_env
+        New Ndn-Environment directory initialized: my_env
+        $ cd my_env
+
+    Configure the build (config file is documented)
+
+        $ vim env_config.pm
+
+    At this point you may wish to turn the build directory into a git
+    repository:
+
+        $ git init .
+        $ git add .
+        $ git commit -m"Initial Commit"
+
+    Build the specified perl-version, perl-module, and anything else
+    configured, then produce a package. What items get built for the package
+    is configured in env_config.pm in the project root.
+
+        $ ndn_env build package
+
+   ADDING MODULES
+    Ndn-Environment uses a local cpan mirror called envpan. envpan is built
+    using OrePAN2. In order for a module to be installed to your environment
+    it must be added to envpan. Any module listed in the config file will be
+    automatically fetched from cpan and injected into envpan. Dependencies
+    are not fetched!.
+
+    Adding modules to envpan by hand
+
+        $ ndn_env addmodule Some::Module
+        $ ndn_env addmodule Some-Module.tar.gz
+        $ ndn_env addmodule http://.../Some-Module.tar.gz
+        $ ndn_env addmodule git://...
+
+    Adding modules the easy way:
+
+        $ ndn_env build modules --auto_deps
+
+    This will automatically fetch dependencies and inject them into envpan.
+    All future builds will use the versions already fetched, this guarentees
+    that after the first build your environment will always be consistent,
+    modules will only be upgraded if you re-add them.
+
+   GETTING HELP
+        # List commands:
+        $ ndn_env help
+
+        # Get help for a command
+        $ ndn_env help COMMAND
+
+  API
+    TODO
+
+METHODS
+    TODO
+
+AUTHORS
+    Chad Granum exodist7@gmail.com
+
+COPYRIGHT
+    Copyright (C) 2013 New Dream Network LLC
+
+    Ndn-Environment is free software; FreeBSD License
+
+    NDN-Environment is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the license for
+    more details.
+

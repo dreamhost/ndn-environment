@@ -1,0 +1,27 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+# Use the libs specific to this repo
+BEGIN { unshift @INC => './lib' if -e './env_config.pm' && -d './lib' }
+
+use Ndn::Environment;
+use Ndn::Environment::CLI;
+
+my $env = Ndn::Environment->singleton;
+$env->load_plugins;
+
+my $cli = Ndn::Environment::CLI->singleton;
+$cli->load_plugins;
+
+my $vers = $env->perl_version;
+if ($vers) {
+    my $perl_dir = $env->perl_dir;
+    my $perl     = $env->perl;
+    my $tmp      = $env->temp;
+    system("cp -f '$perl_dir/lib/$vers/x86_64-linux/Config.pm.real' '$perl_dir/lib/$vers/x86_64-linux/Config.pm'");
+}
+
+$cli->run(@ARGV);
+
+1;

@@ -42,7 +42,7 @@ sub steps {
         sub { print "Configuring and building perl, use 'tail -f $outfile' to watch\n" },
         "./Configure -de -Dprefix='$dest' -Accflags='-fPIC' > $outfile 2>&1",
         "make >> $outfile 2>&1",
-        #"make test >> $outfile 2>&1",
+        "make test >> $outfile 2>&1",
         "make install DESTDIR='$build' >> $outfile 2>&1",
         sub {
             my $perl_dir = NDN_ENV->perl_dir;

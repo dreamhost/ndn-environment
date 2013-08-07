@@ -13,6 +13,7 @@ sub option_details {
         'auto_deps' => 'automatically fetch deps from cpan and inject them into NdnPAN',
         'cpan'      => 'Use cpan instead of NdnPAN',
         'debug'     => 'Show cpanm output',
+        'cpanm_args=s' => 'Additional args to cpanm',
     );
 }
 
@@ -34,6 +35,7 @@ sub steps {
                 install_module(
                     $module,
                     local_lib   => '/home/cgranum/environment/build/opt/plack/perl',
+                    cpanm_args  => $self->args->{'cpanm_args=s'} || '',
                     auto_inject => $self->args->{auto_deps} || 0,
                     debug       => $self->args->{debug}     || 0,
                     from        => $self->args->{cpan} ? 'cpan' : 'mirror',

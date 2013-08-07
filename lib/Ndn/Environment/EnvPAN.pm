@@ -5,6 +5,7 @@ use warnings;
 use Config;
 use base 'Exporter';
 use Carp qw/croak confess/;
+use File::Temp qw/tempfile/;
 
 use Ndn::Environment;
 use Ndn::Environment::Util qw/run_in_config_env/;
@@ -53,7 +54,7 @@ sub inject_module {
         }
 
         print "Rebuilding index...\n";
-        system("$index envpan") && die $!;
+        system("$index envpan >/dev/null 2>&1") && die $!;
     };
 }
 
@@ -61,7 +62,7 @@ sub install_module {
     my ( $module, %params ) = @_;
 
     $NESTING{$module}++;
-    die "Infinite nest?" if $NESTING{$module} > 10;
+    die "Infinite nest?" if $NESTING{$module} > 3;
 
     confess "You must specify a 'from' param of either 'cpan' or 'mirror'"
         unless $params{from};
@@ -73,7 +74,7 @@ sub install_module {
     );
     #>>>
 
-    push @cpanm_args => "-L '$params{local_lib}'"
+    push @cpanm_args => "-l '$params{local_lib}'"
         if $params{local_lib};
 
     run_in_config_env {
@@ -88,29 +89,40 @@ sub install_module {
         my $command = join " " => (
             $perl,
             $cpanm,
+            $params{cpanm_args} ? $params{cpanm_args} : (),
             @cpanm_args,
             $module,
         );
 
         print "Installing Module: $module\n";
-        my @need;
 
-        open( my $fh, '-|', "$command 2>&1" ) || die "Could not open cpanm: $!";
-        my $output = "";
-        while ( my $line = <$fh> ) {
-            $output .= $line;
-            print $line if $params{debug};
+        my ($th, $tf) = tempfile;
+        close($th);
+
+        system( "$command 2>&1 | tee $tf" ) && die "tee command failed: $!";
+
+        my (@need, $fail);
+        open( $th, '<', $tf ) || die "Could not open '$tf': $!";
+        while (my $line = <$th>) {
+            $fail ||= $line =~ m/Bailing out the installation/;
+
+            if( $line =~ m{Installing \S+ failed\. See (\S+) for details}) {
+                die "Error, check $1\n";
+            }
+
+            if( my @modules = ($line =~ m/Module '(\S+)' is not installed/g)) {
+                push @need => @modules;
+                next;
+            }
 
             next unless $line =~ m/Finding (\S+) \([^\)]*\) on mirror/
                 || $line =~ m/Installed version \([^\)]*\) of (\S+) is not in range/;
-
+            
             push @need => $1;
         }
-        close $fh;
-        my $exit = $?;
 
-        if ($exit) {
-            die $output unless $params{auto_inject};
+        if (@need || $fail) {
+            die "cpanm failed" unless $params{auto_inject};
 
             if (@need) {
                 my %seen;
@@ -121,7 +133,7 @@ sub install_module {
                 install_module( $module, %params );
             }
             else {
-                die $output;
+                die "Error installing $module";
             }
         }
 

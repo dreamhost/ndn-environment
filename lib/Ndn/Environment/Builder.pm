@@ -8,6 +8,7 @@ use Ndn::Environment::Util qw/accessors accessor/;
 use Ndn::Environment;
 
 accessor args => sub { {} };
+accessor argv => sub { [] };
 
 sub new {
     my $class = shift;
@@ -22,6 +23,8 @@ sub new {
         \@argv,
         map { $_ => \$args->{$_} } keys %options
     );
+
+    $self->argv( \@argv );
 
     return $self;
 }

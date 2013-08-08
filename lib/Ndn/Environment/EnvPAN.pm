@@ -101,7 +101,7 @@ sub install_module {
 
         system( "$command 2>&1 | tee $tf" ) && die "tee command failed: $!";
 
-        my (@need, $fail);
+        my (@fetch, @inst, $fail);
         open( $th, '<', $tf ) || die "Could not open '$tf': $!";
         while (my $line = <$th>) {
             $fail ||= $line =~ m/Bailing out the installation/;
@@ -110,25 +110,25 @@ sub install_module {
                 die "Error, check $1\n";
             }
 
-            if( my @modules = ($line =~ m/Module '(\S+)' is not installed/g)) {
-                push @need => @modules;
+            if( my @modules = ($line =~ m/Finding (\S+) \([^\)]*\) on mirror/g)) {
+                push @fetch => @modules;
                 next;
             }
 
-            next unless $line =~ m/Finding (\S+) \([^\)]*\) on mirror/
+            next unless $line =~ m/Module '(\S+)' is not installed/
                 || $line =~ m/Installed version \([^\)]*\) of (\S+) is not in range/;
             
-            push @need => $1;
+            push @inst => $1;
         }
 
-        if (@need || $fail) {
+        if (@inst || @fetch || $fail) {
             die "cpanm failed" unless $params{auto_inject};
 
-            if (@need) {
+            if (@inst || @fetch) {
                 my %seen;
-                @need = grep { $_ && !$seen{$_}++ } @need;
+                my @need = grep { $_ && !$seen{$_}++ } @inst, @fetch;
                 print "Found deps: " . join( ", ", @need ) . "\n";
-                inject_module(@need);
+                inject_module(@fetch);
                 install_module( $_, %params ) for grep { $_ ne $module } @need;
                 install_module( $module, %params );
             }

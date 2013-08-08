@@ -101,9 +101,9 @@ sub run_in_env(&) {
 
     local %ENV = %ENV;
 
-    delete $ENV{$_} for grep { m/PERLBREW/ } keys %ENV;
-    $ENV{PERL_MB_OPT}  = "--install_base $perl_dir";
-    $ENV{PERL_MM_OPT}  = "INSTALL_BASE=$perl_dir";
+    delete $ENV{$_} for grep { m/PERL/ } keys %ENV;
+    #$ENV{PERL_MB_OPT}  = "--install_base $perl_dir";
+    #$ENV{PERL_MM_OPT}  = "INSTALL_BASE=$perl_dir";
     $ENV{PATH}         = "$tmp:$perl_dir/bin:$ENV{PATH}";
     $ENV{LIBRARY_PATH} = "$perl_dir/lib/$vers/x86_64-linux/CORE";
     $ENV{CPATH}        = "$perl_dir/lib/$vers/x86_64-linux/CORE";

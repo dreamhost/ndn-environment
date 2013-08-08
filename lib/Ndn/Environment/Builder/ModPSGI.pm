@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Ndn::Environment qw/builder/;
-use Ndn::Environment::Util qw/run_in_env/;
+use Ndn::Environment::Util qw/run_in_env run_in_config_env/;
 use Ndn::Environment::EnvPAN qw/install_module/;
 use Ndn::Environment::Config;
 

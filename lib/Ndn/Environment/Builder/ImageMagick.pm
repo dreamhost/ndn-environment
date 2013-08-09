@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Ndn::Environment qw/builder/;
-use Ndn::Environment::Util qw/run_in_env/;
+use Ndn::Environment::Util qw/run_in_config_env/;
 use Ndn::Environment::Config;
 
 sub deps { qw/perl cpanm envpan/ }
@@ -12,34 +12,35 @@ sub description {
     return "Build ImageMagick";
 }
 
-sub option_details {
-    return (
-    );
-}
+sub option_details { return () }
 
 sub steps {
     my $self = shift;
 
-    my $perl_dir = NDN_ENV->perl_dir;
-    my $tmp      = NDN_ENV->temp;
-    my $build    = NDN_ENV->build_dir;
-    my $vers     = NDN_ENV->perl_version;
+    my $perl  = NDN_ENV->perl;
+    my $tmp   = NDN_ENV->temp;
+    my $build = NDN_ENV->build_dir;
+    my $vers  = NDN_ENV->perl_version;
+
+    if (-f "$build/opt/plack/imagemagick/bin/convert") {
+        print "ImageMagick already installed\n";
+        return ();
+    }
 
     return (
         "mkdir '$tmp/imagemagick'",
         "tar -zxf source/ImageMagick.tar.gz -C '$tmp/imagemagick' --strip-components=1",
         sub { chdir "$tmp/imagemagick" },
         sub {
-            run_in_env {
+            run_in_config_env {
                 $self->run_shell(
                     [
                         './configure',
                         "--prefix=/opt/plack/imagemagick",
-                        "--with-perl=$perl_dir/bin/perl",
+                        "--with-perl=$perl",
                     ],
 
                     'make',
-                    'make test',
                     "make install DESTDIR='$build'",
                 );
             }

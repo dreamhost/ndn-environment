@@ -104,10 +104,12 @@ sub run_in_env(&) {
     delete $ENV{$_} for grep { m/PERL/ } keys %ENV;
     #$ENV{PERL_MB_OPT}  = "--install_base $perl_dir";
     #$ENV{PERL_MM_OPT}  = "INSTALL_BASE=$perl_dir";
-    $ENV{PATH}         = "$tmp:$perl_dir/bin:$ENV{PATH}";
-    $ENV{LIBRARY_PATH} = "$perl_dir/lib/$vers/x86_64-linux/CORE";
-    $ENV{CPATH}        = "$perl_dir/lib/$vers/x86_64-linux/CORE";
-    $ENV{PERL5LIB}     = join ':' => (
+    $ENV{LDFLAGS}         = "-L$perl_dir/lib/$vers/x86_64-linux/CORE";
+    $ENV{LD_LIBRARY_PATH} = "$perl_dir/lib/$vers/x86_64-linux/CORE";
+    $ENV{LIBRARY_PATH}    = "$perl_dir/lib/$vers/x86_64-linux/CORE";
+    $ENV{CPATH}           = "$perl_dir/lib/$vers/x86_64-linux/CORE";
+    $ENV{PATH}            = "$tmp:$perl_dir/bin:$ENV{PATH}";
+    $ENV{PERL5LIB}        = join ':' => (
         "$perl_dir/lib/site_perl/$vers/x86_64-linux",
         "$perl_dir/lib/site_perl/$vers",
         "$perl_dir/lib/$vers/x86_64-linux",

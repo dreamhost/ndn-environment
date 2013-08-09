@@ -24,8 +24,8 @@ sub description {
 sub steps {
     my $self = shift;
 
-    my $perl_dir = NDN_ENV->perl_dir;
-    my $vers     = NDN_ENV->perl_version;
+    my $perl_dir  = NDN_ENV->perl_dir;
+    my $vers      = NDN_ENV->perl_version;
     my $build_dir = NDN_ENV->build_dir;
 
     return (

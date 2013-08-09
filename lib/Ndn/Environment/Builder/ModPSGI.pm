@@ -43,8 +43,7 @@ sub steps {
         return ();
     }
 
-    my $repo =
-           $self->args->{'clone=s'}
+    my $repo = $self->args->{'clone=s'}
         || config->{mod_psgi_src}
         || die "No git repo specified, no source to build.";
 
@@ -56,7 +55,7 @@ sub steps {
                     local_lib   => '/home/cgranum/environment/build/opt/plack/perl',
                     auto_inject => $self->args->{auto_deps} || 0,
                     debug       => $self->args->{debug}     || 0,
-                    from => $self->args->{cpan} ? 'cpan' : 'mirror'
+                    from        => $self->args->{cpan} ? 'cpan' : 'mirror'
                 );
             }
         },

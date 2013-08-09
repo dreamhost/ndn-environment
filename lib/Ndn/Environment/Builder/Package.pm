@@ -47,7 +47,7 @@ Priority: optional
 Section: devel
 Installed-Size: 100
 Maintainer: $maint
-Architecture: i386 
+Architecture: i386
 Version: ${ver}${deps}
 Description: $desc
             EOT

@@ -14,11 +14,8 @@ my %FILES = (
     # Version of perl to download and use 
     perl_version => undef, # Example: 5.16.3
 
-    # Add 'modpsgi' to this if you want it:
+    # Add 'modperl' to this if you want it:
     package_builds => [ qw/perl cpanm envpan modules/ ],
-
-    # Git repo or tarball for mod_psgi source
-    mod_psgi_src => undef,
 
     # Packaging details:
     package_type        => 'deb',

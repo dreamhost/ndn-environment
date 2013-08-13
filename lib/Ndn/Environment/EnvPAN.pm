@@ -115,10 +115,13 @@ sub install_module {
                 next;
             }
 
-            next unless $line =~ m/Module '(\S+)' is not installed/
-                || $line =~ m/Installed version \([^\)]*\) of (\S+) is not in range/;
-            
-            push @inst => $1;
+            if ( my @modules = ($line =~ m/Module '(\S+)' is not installed/g)) {
+                push @inst => $1;
+            }
+
+            if ($line =~ m/Installed version \([^\)]*\) of (\S+) is not in range/) {
+                push @inst => $1;
+            }
         }
 
         if (@inst || @fetch || $fail) {

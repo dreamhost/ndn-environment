@@ -22,7 +22,7 @@ sub steps {
     my $build    = NDN_ENV->build_dir;
     my $vers     = NDN_ENV->perl_version;
 
-    if ( -e "$build/usr/lib/apache2/modules/mod_perl.so" ) {
+    if ( -e "$build/usr/lib/apache2/modules/mod_perl_plack.so" ) {
         print "mod_perl already built...\n";
         return ();
     }
@@ -44,6 +44,7 @@ sub steps {
                 );
             }
         },
+		"mv '$build/usr/lib/apache2/modules/mod_perl.so' '$build/usr/lib/apache2/modules/mod_perl_plack.so'"
     );
 }
 

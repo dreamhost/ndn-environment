@@ -1,0 +1,69 @@
+<dl class="listnav">
+    <dt id="Purge">Purge</dt>
+    <dd>
+        Simply removes the 'build' directory so that the environment will need
+        to be built completely from scratch again.
+    </dd>
+
+    <dt id="Init">Init</dt>
+    <dd>
+        Used to initialize a new environment.
+
+        <script class="code">
+            $ ndn_env init myenv
+        </script>
+
+        This will create the 'myenv' directory with a config file example and
+        an empty 'source' directory. 
+    </dd>
+
+    <dt id="Help">Help</dt>
+    <dd>
+        Used to get help. Without arguments it will show all available
+        commands. With a command as an argument it will provide command
+        specific help.
+
+        <script class="code">
+            $ ndn_env help
+        </script>
+
+        <script class="code">
+            $ ndn_env help COMMAND
+        </script>
+
+        The help for the 'build' command lists available builders.
+    </dd>
+
+    <dt id="Build">Build</dt>
+    <dd>
+        Used to build one or more components of the environment. If you request
+        to build a component that depends on others they will be built as well.
+
+        <script class="code">
+            $ ndn_env build perl
+        </script>
+
+        <script class="code">
+            $ ndn_env build package
+        </script>
+    </dd>
+
+    <dt id="AddModule">AddModule</dt>
+    <dd>
+        This will add the specified module to the environment. <b>Note: This
+        does not add the module to the config file, so building the environment
+        fram scratch will not include the added module.</b>
+    </dd>
+
+    <dt id="Run">Run</dt>
+    <dd>
+        This will run the custom-build perl binary (assuming it is built).
+    </dd>
+
+    <dt id="CUSTOM">CUSTOM</dt>
+    <dd>
+        Commands are plugins, it is easy to add custom ones.
+
+        <div class="code" src="command.pl"></div>
+    </dd>
+</dl>

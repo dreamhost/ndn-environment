@@ -1,0 +1,67 @@
+<dl class="listnav">
+    <dt id="concept">Concept</dt>
+    <dd>
+        <h2>Concept</h2>
+
+        Ndn-Enironment is a build system that takes a specification and builds
+        a perl environment from it. It uses a git-like command line interface
+        to initialize an environment project, and built it. An environment
+        project can be used to produce identical environments across multiple
+        platforms.
+
+        <p>
+
+        A built environment will ultimately be packaged as a deb (or
+        potentially other systems). It will contain whatever components you
+        specify in your configuration. Soem options include:
+
+        <ul>
+            <li>Custom-built perl</li>
+            <li>mod_perl built against the custom perl and system apache</li>
+            <li>perl modules you request</li>
+            <li>ImageMagick + perl libraries</li>
+            <li>Static Files</li>
+        </ul>
+    </dd>
+
+    <dt id="darkpan">DarkPAN</dt>
+    <dd>
+        <h2>Module Management</h2>
+
+        Ndn-Environment uses <a
+        href="https://metacpan.org/release/OrePAN2">OrePAN2</a> which is a
+        DarkPAN management system. Essentially OrePAN2 creates a local cpan
+        mirror that only contains modules we add. This allows us to rebuild the
+        environment on any machine at any time without worrying about pulling
+        down different module versions.
+
+        <p>
+
+        Because of OrePAN you can mirror dists from CPAN, a local file, a url,
+        or even a github project. cpanm is able to use the OrePAN mirror which
+        makes installing modules and deps from your mirror quite simple. Under
+        the hood Ndn-Environment will use cpanm.
+    </dd>
+
+    <dt id="bootstrapping">Bootstrapping</dt>
+    <dd>
+        <h2>Bootstrapping</h2>
+
+        Ndn-Environment does its best to avoid both dependence, and
+        interference with the system perl. A system perl is needed to run
+        Ndn-Environment, but it has very few dependencies. Most tools that
+        ndn-environment needs will be downloaded and installed into the project
+        directory when needed.
+
+        <p>
+
+        Bootstrapping will prepare the following:
+
+        <ul>
+            <li>DarkPAN (OrePAN2)</li>
+            <li>cpanm</li>
+            <li>Dependencies of the toolchain</li>
+        </ul>
+    </dd>
+</dl>
+

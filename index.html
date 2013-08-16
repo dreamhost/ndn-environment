@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="css/ndn_env.css">
+
+        <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+        <script src="js/ndn_env.js"></script>
+
+        <script type="text/javascript" src="js/shCore.js">          </script>
+        <script type="text/javascript" src="js/shBrushPerl.js">     </script>
+        <script type="text/javascript" src="js/shBrushPlain.js">    </script>
+        <script type="text/javascript" src="js/shBrushTAP.js">      </script>
+        <script type="text/javascript" src="js/shBrushVimscript.js"></script>
+
+        <link href="css/shCore.css"         rel="stylesheet" type="text/css" />
+        <link href="css/shThemeDefault.css" rel="stylesheet" type="text/css" />
+    </head>
+    <body>
+        <h1>Ndn Environment</h1>
+
+        <ul id="navigation">
+            <li class="nav" id="ndn_env"> <a href="#ndn_env">About</a>       </li>
+            <li class="nav" id="config">  <a href="#config">Configuration</a></li>
+            <li class="nav" id="commands"><a href="#commands">Commands</a>   </li>
+            <li class="nav" id="builders"><a href="#builders">Builders</a>   </li>
+        </ul>
+
+        <div id="error_window" style="display:none">
+            <ul class="errors"></ul>
+        </div>
+
+        <div id="content">
+            <div id="subnav">
+                <div id="nonav">Hide Navigation</div>
+                <ul id="main_subnav" class="listnav"></ul>
+            </div>
+            <div id="view">
+            </div>
+        </div>
+    </body>
+</html>

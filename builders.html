@@ -1,0 +1,61 @@
+<dl class="listnav">
+    <dt id="Perl">Perl</dt>
+    <dd>
+        This will download, configure, and build the perl version specified in
+        the config file or command line.
+    </dd>
+
+    <dt id="Cpanm">Cpanm</dt>
+    <dd>
+        This will install cpanm into the custom built perl.
+    </dd>
+
+    <dt id="EnvPAN">EnvPAN</dt>
+    <dd>
+        This will bootstrap OrePAN2 and inject the modules listed in your
+        config file from cpan.
+
+        <p>
+
+        Note: It is best to add the envpan directory this builds to your
+        project git repo, that way building from fresh checkouts of your
+        environment will build with the same module versions.
+    </dd>
+
+    <dt id="Modules">Modules</dt>
+    <dd>
+        Build all the modules listed in your config file, as well as their
+        dependencies. Will ONLY use modules that have been added to envpan. If
+        envpan is missing a dependency then this build will fail. There is an
+        --auto_deps flag that will make envpan inject deps from cpan as it
+        finds them, which is useful for initial bootstrapping.
+    </dd>
+
+    <dt id="Static">Static</dt>
+    <dd>
+        Will copy the static/* files to build/* so that they will be included
+        in any package that is built.
+    </dd>
+
+    <dt id="ModPerl">ModPerl</dt>
+    <dd>
+        Will build mod_perl against the system apache and your custom perl.
+    </dd>
+
+    <dt id="ImageMagick">ImageMagick</dt>
+    <dd>
+        Builds ImageMagick against the custom perl.
+    </dd>
+
+    <dt id="Package">Package</dt>
+    <dd>
+        Created a package for your environment.
+    </dd>
+
+    <dt id="CUSTOM">CUSTOM</dt>
+    <dd>
+        Builders are plugins, it is easy to add custom ones.
+
+        <div class="code" src="builder.pl"></div>
+    </dd>
+</dl>

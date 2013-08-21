@@ -33,7 +33,10 @@ sub steps {
     my $deps  = $self->args->{'depends=s'}     || config->{package_depends};
     my $ver   = $self->args->{'version=s'}     || config->{package_version}->();
 
-    $deps = "\nDepends: $deps" if $deps;
+	chomp(my $arch = `uname -m`);
+	$arch = 'amd64' if $arch eq 'x86_64';
+
+	$deps = "\nDepends: $deps" if $deps;
 
     return (
         sub {
@@ -47,7 +50,7 @@ Priority: optional
 Section: devel
 Installed-Size: 100
 Maintainer: $maint
-Architecture: amd64
+Architecture: $arch
 Version: ${ver}${deps}
 Description: $desc
             EOT

@@ -16,6 +16,10 @@ $CONFIG = do './env_config.pm'
 
 __END__
 
+=head1 NAME
+
+Ndn::Environment::Config - Load the config file
+
 =head1 COPYRIGHT
 
 Copyright (C) 2013 New Dream Network LLC

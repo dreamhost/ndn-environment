@@ -18,6 +18,10 @@ sub run {
 
 __END__
 
+=head1 NAME
+
+Ndn::Environment::Command::Purge - Purge the build directory
+
 =head1 COPYRIGHT
 
 Copyright (C) 2013 New Dream Network LLC

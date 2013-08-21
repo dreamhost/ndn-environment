@@ -78,6 +78,10 @@ sub build_path {
 
 __END__
 
+=head1 NAME
+
+Ndn::Environment::Command::Init - Initialize a new environment
+
 =head1 COPYRIGHT
 
 Copyright (C) 2013 New Dream Network LLC

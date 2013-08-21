@@ -26,6 +26,10 @@ sub run {
 
 __END__
 
+=head1 NAME
+
+Ndn::Environment::Command::Help - Command to get help
+
 =head1 COPYRIGHT
 
 Copyright (C) 2013 New Dream Network LLC

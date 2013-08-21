@@ -65,6 +65,10 @@ Description: $desc
 
 __END__
 
+=head1 NAME
+
+Ndn::Environment::Builder::Package - Build the environment into a package
+
 =head1 COPYRIGHT
 
 Copyright (C) 2013 New Dream Network LLC

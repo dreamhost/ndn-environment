@@ -18,6 +18,30 @@ sub run {
 
 __END__
 
+=head1 NAME
+
+Ndn::Environment::Command - Base class for commands
+
+=head1 WRITING A NEW COMMAND
+
+	package Ndn::Environment::Command::MyCommand;
+	use strict;
+	use warnings;
+	
+	use Ndn::Environment;
+	use Ndn::Environment::CLI qw/command/;
+	
+	sub short_desc { "This is my command" }
+	sub usage      { "$0 mycommand [ARGS]" }
+	
+	sub run {
+	    my $self = shift;
+		my @argv = @_;
+		...
+	}
+	
+	1;
+
 =head1 COPYRIGHT
 
 Copyright (C) 2013 New Dream Network LLC

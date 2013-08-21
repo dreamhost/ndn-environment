@@ -151,6 +151,62 @@ sub install_module {
 
 __END__
 
+=head1 NAME
+
+Ndn::Environment::EnvPAN - Interface to the envpan Darkpan
+
+=head1 SYNOPSYS
+
+	use Ndn::Environment::EnvPAN qw/inject_module install_module/;
+
+	inject_module( 'Foo::Bar', 'Baz::Bat' );
+
+	install_module  'Foo::Bar' => (auto_inject => 1);
+
+=head1 API
+
+=over 4
+
+=item inject_module( @MODULES )
+
+Inject 1 or more modules into the darkpan. Modules will be downloaded from cpan
+and then injected. After the injection the module index will be rebuilt, this
+could take a long time if there are a lot of modules.
+
+=item install_module($MODULE)
+
+=item install_module($MODULE, %PARAMS)
+
+=item install_module $MODULE => (%PARAMS)
+
+Install a module.
+
+=back
+
+=head2 INSTALL PARAMS
+
+=over 4
+
+=item from => 'cpan'
+
+=item from => 'mirror'
+
+Required, specify to fetch modules from either cpan or the envpan mirror.
+
+=item local_lib => $PATH
+
+Optional, will install modules to the specified local_lib directory
+
+=item env => \%CUSTOM_ENV
+
+Will build the modules with the specified %ENV overrides.
+
+=item cpanm_args => "..."
+
+Arguments to pass into cpanm
+
+=back
+
 =head1 COPYRIGHT
 
 Copyright (C) 2013 New Dream Network LLC

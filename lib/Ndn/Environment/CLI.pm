@@ -82,6 +82,51 @@ sub run {
 
 __END__
 
+=head1 NAME
+
+Ndn::Environment::CLI - The Command Line Interface module.
+
+=head1 SYNOPSYS
+
+	use Ndn::Environment::CLI;
+
+	my $cli = Ndn::Environment::CLI->singleton;
+
+Or if you are writing a new command (See L<Ndn::Environment::Command>)
+
+	use Ndn::Environment::CLI qw/command/;
+	...
+
+=head1 METHODS
+
+=over 4
+
+=item $cli = $class->singleton
+
+Get the singleton
+
+=item $cli->load_plugins
+
+Load all commands
+
+=item $cli->push_command
+
+Add a command
+
+=item $cli->commands
+
+get the hashref of C<command => $class>
+
+=item $cli->command($COMMAND)
+
+Get the class of a specific command
+
+=item $cli->run( $command, @argv )
+
+Run a command.
+
+=back
+
 =head1 COPYRIGHT
 
 Copyright (C) 2013 New Dream Network LLC

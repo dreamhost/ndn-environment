@@ -15,13 +15,17 @@ sub run {
     my $perl = $ne->perl;
 
 	run_in_config_env {
-		system( $perl ) && die $!;
+		exec( $perl ) && die $!;
 	}
 }
 
 1;
 
 __END__
+
+=head1 NAME
+
+Ndn::Environment::Command::Run - Runs perl from the environment.
 
 =head1 COPYRIGHT
 

@@ -171,6 +171,46 @@ sub run_in_config_env(&) {
 
 __END__
 
+=head1 NAME
+
+Ndn::Environment::Util - Utilities
+
+=head1 SYNOPSYS
+
+=head1 EXPORTS
+
+=over 4
+
+=item new
+
+Generic new() method so that we don't need to rewrite it everywhere or inherit
+a generic base object in everything.
+
+=item accessor 'NAME'
+
+=item accessor NAME => sub { return DEFAULT }
+
+Define an accessor, if a coderef is provided it will be used to generate the
+default value whenever no value is defined.
+
+=item accessors qw/NAME NAME .../
+
+Define multiple read-write accessors at once.
+
+=item run_in_env { ... }
+
+Run code in the environment (environment vars altered)
+
+=item run_with_config { ... }
+
+Run code with a modified Config.pm
+
+=item run_in_config_env { ... }
+
+Run code in the environment with %ENV modified and Config.pm altered.
+
+=back
+
 =head1 COPYRIGHT
 
 Copyright (C) 2013 New Dream Network LLC

@@ -274,13 +274,23 @@ Add a builder.
 
 =item $href = $e->builder_list
 
+Get the C<name => class> hashref of builders
+
 =item $perl_binary = $e->perl
+
+Get the path to the perl binary
 
 =item $perl_dir = $e->perl_dir
 
+Get the path to the perl directory (prefixed with the build dir)
+
 =item $perl_ver = $e->perl_version
 
+Get the perl version the environment has built.
+
 =item @list = $e->builders
+
+Get a list of all builder names.
 
 =back
 

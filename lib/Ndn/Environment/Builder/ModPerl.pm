@@ -52,6 +52,11 @@ sub steps {
 
 __END__
 
+=head1 NAME
+
+Ndn::Environment::Builder::ModPerl - Build ModPerl against the system apache
+and the environment perl.
+
 =head1 COPYRIGHT
 
 Copyright (C) 2013 New Dream Network LLC

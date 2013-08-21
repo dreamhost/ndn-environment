@@ -49,6 +49,15 @@ sub steps {
 
 __END__
 
+=head1 NAME
+
+Ndn::Environment::Builder::Modules - Builder for the modules listed in the
+config file.
+
+=head1 DESCRIPTION
+
+Will build all the modules specified in your config file.
+
 =head1 COPYRIGHT
 
 Copyright (C) 2013 New Dream Network LLC

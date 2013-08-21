@@ -23,6 +23,11 @@ sub steps {
 
 __END__
 
+=head1 NAME
+
+Ndn::Environment::Builder::Static - Copy static files from the 'static'
+directory into the build directory.
+
 =head1 COPYRIGHT
 
 Copyright (C) 2013 New Dream Network LLC

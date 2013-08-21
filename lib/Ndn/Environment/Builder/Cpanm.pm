@@ -49,6 +49,10 @@ sub steps {
 
 __END__
 
+=head1 NAME
+
+Ndn::Environment::Builder::Cpanm - Builder for cpanm
+
 =head1 COPYRIGHT
 
 Copyright (C) 2013 New Dream Network LLC

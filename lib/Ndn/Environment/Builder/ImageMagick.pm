@@ -52,6 +52,14 @@ sub steps {
 
 __END__
 
+=head1 NAME
+
+Ndn::Environment::Builder::ImageMagick - Builder for ImageMagick.
+
+=head1 DESCRIPTION
+
+This builds ImageMagick, including the perl modules.
+
 =head1 COPYRIGHT
 
 Copyright (C) 2013 New Dream Network LLC

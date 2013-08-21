@@ -92,6 +92,11 @@ sub check_built_version {
 
 __END__
 
+=head1 NAME
+
+Ndn::Environment::Builder::Perl - Builder that configures and compiles the
+environments perl.
+
 =head1 COPYRIGHT
 
 Copyright (C) 2013 New Dream Network LLC

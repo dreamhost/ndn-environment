@@ -49,6 +49,16 @@ sub steps {
 
 __END__
 
+=head1 NAME
+
+Ndn::Environment::Builder::EnvPAN - Build the local darkpan.
+
+=head1 DESCRIPTION
+
+Builds ./envpan as a darkpan mirror, injects all the modules listed int he
+config file. Also creates a local::lib for any dependencies needed to build
+and/or use the envpan.
+
 =head1 COPYRIGHT
 
 Copyright (C) 2013 New Dream Network LLC

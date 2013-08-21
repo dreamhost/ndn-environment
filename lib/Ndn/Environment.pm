@@ -17,7 +17,6 @@ use Module::Pluggable
 accessors qw/cwd/;
 
 accessor builder_list => sub { {} };
-accessor builder_inst => sub { {} };
 
 accessor build_dir => sub {
     my $self = shift;
@@ -233,11 +232,57 @@ be upgraded if you re-add them.
 
 =head2 API
 
-TODO
+Using this module will import 'NDN_ENV' which returns the singleton instance.
+
+	use Ndn::Environment;
+
+	my $perl = NDN_ENV->perl;
+
+Or if you are making a builder:
+
+	use Ndn::Environment 'builder';
+
+See L<Ndn::Environment::Builder>
 
 =head1 METHODS
 
-TODO
+=over 4
+
+=item $e = $e->singleton
+
+Get the singleton
+
+=item $class = $e->builder($NAME)
+
+Get the package for the specified builder
+
+=item $dir = $e->build_dir
+
+Get the directory that is used for builds.
+
+=item $dir = $e->temp
+
+Get the current temp directory.
+
+=item $e->load_plugins
+
+Load all the builder plugins.
+
+=item $e->push_builder($CLASS)
+
+Add a builder.
+
+=item $href = $e->builder_list
+
+=item $perl_binary = $e->perl
+
+=item $perl_dir = $e->perl_dir
+
+=item $perl_ver = $e->perl_version
+
+=item @list = $e->builders
+
+=back
 
 =head1 AUTHORS
 

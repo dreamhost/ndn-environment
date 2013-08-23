@@ -23,6 +23,7 @@ sub option_details {
     return (
         rebuild     => 'Rebuild perl even if it is already built',
         'version=s' => 'Download the specified perl verson',
+        verbose     => 'Show complete perl build output',
     );
 }
 
@@ -30,6 +31,7 @@ sub ready { 1 }
 
 sub on_error {
     my $self = shift;
+	return if $self->args->{'verbose'};
     my $outfile = $self->outfile;
     system( "cat $outfile" );
 }
@@ -45,17 +47,18 @@ sub steps {
     my $source = $self->source;
     my $dest   = $self->dest;
 
-    my $outfile = $self->outfile;
+	my $outfile = $self->outfile;
+	my $io = $self->args->{'verbose'} ? "" : " >> $outfile 2>&1";
 
     return (
         "mkdir '$tmp/perl'",
         "tar -zxf '$source' -C '$tmp/perl' --strip-components=1",
         sub { chdir "$tmp/perl" || die "Could not chdir to temp '$tmp/perl': $!" },
-        sub { print "Configuring and building perl, use 'tail -f $outfile' to watch\n" },
-        "./Configure -de -Dprefix='$dest' -Accflags='-fPIC' > $outfile 2>&1",
-        "make >> $outfile 2>&1",
-        "make test >> $outfile 2>&1",
-        "make install DESTDIR='$build' >> $outfile 2>&1",
+        sub { return if $self->args->{'verbose'}; print "Configuring and building perl, use 'tail -f $outfile' to watch\n" },
+        "./Configure -de -Dprefix='$dest' -Accflags='-fPIC' $io",
+        "make $io",
+        "make test $io",
+        "make install DESTDIR='$build' $io",
         sub {
             my $perl_dir = NDN_ENV->perl_dir;
             my $vers     = NDN_ENV->perl_version;

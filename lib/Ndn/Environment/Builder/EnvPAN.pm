@@ -43,7 +43,7 @@ sub steps {
             return if -d "envpan/authors";
 
             print "Adding your env_config.pm modules to envpan.\n";
-            inject_module(@{config->{modules}});
+            inject_module(map {ref $_ ? $_->{module} : $_} @{config->{modules}});
         },
     );
 }

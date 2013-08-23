@@ -33,10 +33,19 @@ sub steps {
         sub {
             for my $module (@{config->{modules}}) {
                 next unless $module;
+
+                my $cpanm_args = $self->args->{'cpanm_args=s'} || "";
+                $cpanm_args .= " -v" if $self->args->{'verbose'};
+
+                if (ref $module) {
+                    $cpanm_args .= " $module->{cpanm_args}";
+                    $module = $module->{module};
+                }
+
                 install_module(
                     $module,
                     local_lib   => $perl_dir,
-                    cpanm_args  => $self->args->{'cpanm_args=s'} || $self->args->{'verbose'} ? '-v' :  '',
+                    cpanm_args  => $cpanm_args,
                     auto_inject => $self->args->{auto_deps} || 0,
                     debug       => $self->args->{debug}     || 0,
                     from        => $self->args->{cpan} ? 'cpan' : 'mirror',

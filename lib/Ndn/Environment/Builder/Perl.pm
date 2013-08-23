@@ -31,7 +31,7 @@ sub ready { 1 }
 
 sub on_error {
     my $self = shift;
-	return if $self->args->{'verbose'};
+    return if $self->args->{'verbose'};
     my $outfile = $self->outfile;
     system( "cat $outfile" );
 }
@@ -47,8 +47,8 @@ sub steps {
     my $source = $self->source;
     my $dest   = $self->dest;
 
-	my $outfile = $self->outfile;
-	my $io = $self->args->{'verbose'} ? "" : " >> $outfile 2>&1";
+    my $outfile = $self->outfile;
+    my $io = $self->args->{'verbose'} ? "" : " >> $outfile 2>&1";
 
     return (
         "mkdir '$tmp/perl'",

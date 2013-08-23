@@ -39,6 +39,9 @@ sub steps {
             install_module( 'OrePAN2',       from => 'cpan', local_lib => "$cwd/envpan");
             install_module( 'MetaCPAN::API', from => 'cpan', local_lib => "$cwd/envpan");
 
+            # Do not inject if we have an authors dir
+            return if -d "envpan/authors";
+
             print "Adding your env_config.pm modules to envpan.\n";
             inject_module(@{config->{modules}});
         },

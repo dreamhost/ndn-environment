@@ -14,6 +14,7 @@ sub option_details {
         'cpan'      => 'Use cpan instead of NdnPAN',
         'debug'     => 'Show cpanm output',
         'cpanm_args=s' => 'Additional args to cpanm',
+        'verbose'   => 'Be verbose',
     );
 }
 
@@ -34,8 +35,8 @@ sub steps {
                 next unless $module;
                 install_module(
                     $module,
-                    local_lib   => '/home/cgranum/environment/build/opt/plack/perl',
-                    cpanm_args  => $self->args->{'cpanm_args=s'} || '',
+                    local_lib   => $perl_dir,
+                    cpanm_args  => $self->args->{'cpanm_args=s'} || $self->args->{'verbose'} ? '-v' :  '',
                     auto_inject => $self->args->{auto_deps} || 0,
                     debug       => $self->args->{debug}     || 0,
                     from        => $self->args->{cpan} ? 'cpan' : 'mirror',

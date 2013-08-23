@@ -5,6 +5,13 @@ use File::Temp qw/tempfile/;
 
 use Ndn::Environment qw/builder/;
 use Ndn::Environment::Config;
+use Ndn::Environment::Util qw/accessor/;
+
+accessor outfile => sub {
+    my ( $oh, $outfile ) = tempfile;
+    close($oh);
+    return $outfile;
+};
 
 sub dest { '/opt/plack/perl' }
 
@@ -21,6 +28,12 @@ sub option_details {
 
 sub ready { 1 }
 
+sub on_error {
+    my $self = shift;
+    my $outfile = $self->outfile;
+    system( "cat $outfile" );
+}
+
 sub steps {
     my $self = shift;
 
@@ -32,8 +45,7 @@ sub steps {
     my $source = $self->source;
     my $dest   = $self->dest;
 
-    my ( $oh, $outfile ) = tempfile;
-    close($oh);
+    my $outfile = $self->outfile;
 
     return (
         "mkdir '$tmp/perl'",

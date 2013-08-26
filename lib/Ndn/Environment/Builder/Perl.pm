@@ -21,9 +21,10 @@ sub description {
 
 sub option_details {
     return (
-        rebuild     => 'Rebuild perl even if it is already built',
-        'version=s' => 'Download the specified perl verson',
-        verbose     => 'Show complete perl build output',
+        'rebuild'         => 'Rebuild perl even if it is already built',
+        'version=s'       => 'Download the specified perl verson',
+        'verbose'         => 'Show complete perl build output',
+        'skip-perl-tests' => 'Do not run "make test" when building perl',
     );
 }
 
@@ -57,7 +58,7 @@ sub steps {
         sub { return if $self->args->{'verbose'}; print "Configuring and building perl, use 'tail -f $outfile' to watch\n" },
         "./Configure -de -Dprefix='$dest' -Accflags='-fPIC' $io",
         "make $io",
-        "make test $io",
+        $self->args->{'skip-perl-tests'} ? () : ("make test $io"),
         "make install DESTDIR='$build' $io",
         sub {
             my $perl_dir = NDN_ENV->perl_dir;

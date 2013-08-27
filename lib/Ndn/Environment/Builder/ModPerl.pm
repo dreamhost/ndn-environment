@@ -35,11 +35,11 @@ sub steps {
             run_in_config_env {
                 $self->run_shell(
                     qq{$perl Makefile.PL PREFIX="/opt/plack/perl" MP_APXS="/usr/bin/apxs2"},
-                    'make',
+                    "alias '/opt/plack/perl/bin/perl'='$perl'; make",
                     # Known bug with LWP prevents a single test from passing.
                     # Commenting out tests for now, all others pass, no real
                     # issue here.
-                    #'make test',
+                    #"alias '/opt/plack/perl/bin/perl'='$perl'; make test",
                     "make install DESTDIR='$build'",
                 );
             }

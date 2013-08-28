@@ -34,17 +34,18 @@ sub steps {
         sub {
             run_in_config_env {
                 $self->run_shell(
-                    qq{$perl Makefile.PL PREFIX="/opt/plack/perl" MP_APXS="/usr/bin/apxs2"},
-                    "alias '/opt/plack/perl/bin/perl'='$perl'; make",
+                    qq{$perl Makefile.PL PREFIX="/opt/plack/perl" MP_APXS="/usr/bin/apxs2" PERL="$perl"},
+                    "perl -p -i -e 's{= /opt/plack/perl/bin/perl}{= $perl}g' Makefile src/modules/perl/Makefile",
+                    "PERL='$perl' make",
                     # Known bug with LWP prevents a single test from passing.
                     # Commenting out tests for now, all others pass, no real
                     # issue here.
-                    #"alias '/opt/plack/perl/bin/perl'='$perl'; make test",
-                    "make install DESTDIR='$build'",
+                    #"PERL='$perl' make test",
+                    "PERL='$perl' make install DESTDIR='$build'",
                 );
             }
         },
-		"mv '$build/usr/lib/apache2/modules/mod_perl.so' '$build/usr/lib/apache2/modules/mod_perl_plack.so'"
+        "mv '$build/usr/lib/apache2/modules/mod_perl.so' '$build/usr/lib/apache2/modules/mod_perl_plack.so'"
     );
 }
 

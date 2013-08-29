@@ -25,6 +25,9 @@ my %FILES = (
     package_depends     => "",
     package_version     => sub { time() }, # Set version to build timestamp 
 
+    modperl_apxs   => '/usr/bin/apxs2',
+    modperl_rename => 'mod_perl_custom.so',
+
     # List of modules to build into the environment
     modules => [
         # Add your list of modules here:

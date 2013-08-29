@@ -22,7 +22,11 @@ sub steps {
     my $build    = NDN_ENV->build_dir;
     my $vers     = NDN_ENV->perl_version;
 
-    if ( -e "$build/usr/lib/apache2/modules/mod_perl_plack.so" ) {
+    my $name = config->{modperl_rename};
+    my $apxs = config->{modperl_apxs};
+    chomp(my $mod_path = `$apxs -q LIBEXECDIR`);
+
+    if ( -e "$build/$mod_path/$name" ) {
         print "mod_perl already built...\n";
         return ();
     }
@@ -34,7 +38,7 @@ sub steps {
         sub {
             run_in_config_env {
                 $self->run_shell(
-                    qq{$perl Makefile.PL PREFIX="/opt/plack/perl" MP_APXS="/usr/bin/apxs2" PERL="$perl"},
+                    qq{$perl Makefile.PL PREFIX="/opt/plack/perl" MP_APXS="$apxs" PERL="$perl"},
                     "perl -p -i -e 's{= /opt/plack/perl/bin/perl}{= $perl}g' Makefile src/modules/perl/Makefile",
                     "PERL='$perl' make",
                     # Known bug with LWP prevents a single test from passing.
@@ -45,7 +49,7 @@ sub steps {
                 );
             }
         },
-        "mv '$build/usr/lib/apache2/modules/mod_perl.so' '$build/usr/lib/apache2/modules/mod_perl_plack.so'"
+        "mv '$build/$mod_path/mod_perl.so' '$build/$mod_path/$name'"
     );
 }
 

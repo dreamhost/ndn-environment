@@ -25,6 +25,7 @@ sub steps {
     my $name = config->{modperl_rename};
     my $apxs = config->{modperl_apxs};
     chomp(my $mod_path = `$apxs -q LIBEXECDIR`);
+    chomp(my $inc_path = `$apxs -q INCLUDEDIR`);
 
     if ( -e "$build/$mod_path/$name" ) {
         print "mod_perl already built...\n";
@@ -49,7 +50,8 @@ sub steps {
                 );
             }
         },
-        "mv '$build/$mod_path/mod_perl.so' '$build/$mod_path/$name'"
+        "mv '$build/$mod_path/mod_perl.so' '$build/$mod_path/$name'",
+        "rm -rf '$build/$inc_path'",
     );
 }
 

@@ -33,12 +33,16 @@ sub steps {
     my $deps  = $self->args->{'depends=s'}     || config->{package_depends};
     my $ver   = $self->args->{'version=s'}     || config->{package_version}->();
 
-	chomp(my $arch = `uname -m`);
-	$arch = 'amd64' if $arch eq 'x86_64';
+    chomp(my $arch = `uname -m`);
+    $arch = 'amd64' if $arch eq 'x86_64';
 
-	$deps = "\nDepends: $deps" if $deps;
+    $deps = "\nDepends: $deps" if $deps;
 
     return (
+        sub {
+            return unless config->{package_prebuild};
+            config->{package_prebuild}->();
+        },
         sub {
             mkdir("$build/DEBIAN");
             open( my $fh, '>', "$build/DEBIAN/control" )

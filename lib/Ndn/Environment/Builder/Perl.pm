@@ -50,13 +50,14 @@ sub steps {
 
     my $outfile = $self->outfile;
     my $io = $self->args->{'verbose'} ? "" : " >> $outfile 2>&1";
+    my $config_args = config->{perl_config_args} || '';
 
     return (
         "mkdir '$tmp/perl'",
         "tar -zxf '$source' -C '$tmp/perl' --strip-components=1",
         sub { chdir "$tmp/perl" || die "Could not chdir to temp '$tmp/perl': $!" },
         sub { return if $self->args->{'verbose'}; print "Configuring and building perl, use 'tail -f $outfile' to watch\n" },
-        "./Configure -de -Dprefix='$dest' -Accflags='-fPIC' $io",
+        "./Configure -de -Dprefix='$dest' -Accflags='-fPIC' $config_args $io",
         "make $io",
         $self->args->{'skip-perl-tests'} ? () : ("make test $io"),
         "make install DESTDIR='$build' $io",

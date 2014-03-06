@@ -21,6 +21,7 @@ sub steps {
     my $tmp      = NDN_ENV->temp;
     my $build    = NDN_ENV->build_dir;
     my $vers     = NDN_ENV->perl_version;
+    my $dest     = NDN_ENV->dest;
 
     my $name = config->{modperl_rename};
     my $apxs = config->{modperl_apxs};
@@ -39,8 +40,8 @@ sub steps {
         sub {
             run_in_config_env {
                 $self->run_shell(
-                    qq{$perl Makefile.PL PREFIX="/opt/plack/perl" MP_APXS="$apxs" PERL="$perl"},
-                    "perl -p -i -e 's{= /opt/plack/perl/bin/perl}{= $perl}g' Makefile src/modules/perl/Makefile",
+                    qq{$perl Makefile.PL PREFIX="$dest/perl" MP_APXS="$apxs" PERL="$perl"},
+                    "perl -p -i -e 's{= $dest/perl/bin/perl}{= $perl}g' Makefile src/modules/perl/Makefile",
                     "PERL='$perl' make",
                     # Known bug with LWP prevents a single test from passing.
                     # Commenting out tests for now, all others pass, no real

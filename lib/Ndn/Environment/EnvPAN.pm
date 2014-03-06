@@ -54,7 +54,7 @@ sub inject_module {
         }
 
         print "Rebuilding index...\n";
-        system("$index envpan >/dev/null 2>&1") && die $!;
+        system("$index envpan >/dev/null 2>&1");
     };
 }
 

@@ -13,7 +13,7 @@ accessor outfile => sub {
     return $outfile;
 };
 
-sub dest { '/opt/plack/perl' }
+sub dest { 'perl' }
 
 sub description {
     return "Build a perl install.";
@@ -46,7 +46,7 @@ sub steps {
     my $tmp    = NDN_ENV->temp;
     my $build  = NDN_ENV->build_dir;
     my $source = $self->source;
-    my $dest   = $self->dest;
+    my $dest   = NDN_ENV->dest . '/' . $self->dest;
 
     my $outfile = $self->outfile;
     my $io = $self->args->{'verbose'} ? "" : " >> $outfile 2>&1";

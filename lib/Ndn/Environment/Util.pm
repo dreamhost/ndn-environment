@@ -90,13 +90,14 @@ sub run_in_env(&) {
     my $perl_dir = $ne->perl_dir;
     my $perl     = $ne->perl;
     my $tmp      = $ne->temp;
+    my $dest     = $ne->dest;
 
     system("cp -f '$perl_dir/bin/prove' '$tmp/prove'");
-    system("perl -p -i -e 's{/opt/plack/perl}{$perl_dir}g' '$tmp/prove'") && die $!;
+    system("perl -p -i -e 's{$dest/perl}{$perl_dir}g' '$tmp/prove'") && die $!;
 
     if ( -e "$perl_dir/bin/cpanm" ) {
         system("cp -f '$perl_dir/bin/cpanm' '$tmp/cpanm'");
-        system("perl -p -i -e 's{#!/opt/plack/perl/bin/perl}{#!$perl}g' '$tmp/cpanm'") && die $!;
+        system("perl -p -i -e 's{#!$dest/perl/bin/perl}{#!$perl}g' '$tmp/cpanm'") && die $!;
     }
 
     local %ENV = %ENV;
@@ -138,9 +139,10 @@ sub run_with_config(&) {
     my $tmp      = $ne->temp;
     my $perl_dir = $ne->perl_dir;
     my $perl     = $ne->perl;
+    my $dest     = $ne->dest;
 
     system("cp -f '$perl_dir/lib/$vers/x86_64-linux/Config.pm.real' '$perl_dir/lib/$vers/x86_64-linux/Config.pm'");
-    system("perl -p -i -e 's{/opt/plack/perl}{$perl_dir}g' '$perl_dir/lib/$vers/x86_64-linux/Config.pm'")
+    system("perl -p -i -e 's{$dest/perl}{$perl_dir}g' '$perl_dir/lib/$vers/x86_64-linux/Config.pm'")
         && die "Could not munge Config.pm: $!";
     system(qq|perl -p -i -e "s{(version => '[0-9\\.]+')}{\\1,\\nstartperl => '#!$perl'}g" '$perl_dir/lib/$vers/x86_64-linux/Config.pm'|)
         && die "Could not munge Config.pm: $!";

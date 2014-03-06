@@ -6,6 +6,7 @@ use feature qw/state/;
 our $VERSION = "0.001";
 
 use Ndn::Environment::Util qw/accessors accessor/;
+use Ndn::Environment::Config;
 
 use File::Temp qw/tempdir/;
 use Cwd qw/getcwd/;
@@ -112,6 +113,7 @@ sub perl_dir {
     require Ndn::Environment::Builder::Perl;
     my $perl = join '/' => (
         $self->build_dir,
+        $self->dest,
         Ndn::Environment::Builder::Perl->dest,
     );
 
@@ -123,6 +125,11 @@ sub perl_dir {
 sub perl {
     my $self = shift;
     return join '/' => $self->perl_dir, 'bin/perl';
+}
+
+sub dest {
+    my $self = shift;
+    return $ENV{ENV_DEST} || config->{dest_dir} || "/opt/plack";
 }
 
 1;

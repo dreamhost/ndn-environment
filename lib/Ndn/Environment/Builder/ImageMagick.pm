@@ -21,8 +21,9 @@ sub steps {
     my $tmp   = NDN_ENV->temp;
     my $build = NDN_ENV->build_dir;
     my $vers  = NDN_ENV->perl_version;
+    my $dest  = NDN_ENV->dest;
 
-    if (-f "$build/opt/plack/imagemagick/bin/convert") {
+    if (-f "$build/$dest/imagemagick/bin/convert") {
         print "ImageMagick already installed\n";
         return ();
     }
@@ -36,7 +37,7 @@ sub steps {
                 $self->run_shell(
                     [
                         './configure',
-                        "--prefix=/opt/plack/imagemagick",
+                        "--prefix=$dest/imagemagick",
                         "--with-perl=$perl",
                     ],
 

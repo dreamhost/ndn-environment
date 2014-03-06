@@ -34,11 +34,11 @@ sub steps {
         },
         sub {
             run_in_config_env {
-				local %ENV = %ENV;
-    			$ENV{PERL_MB_OPT}  = "--install_base $perl_dir";
-			    $ENV{PERL_MM_OPT}  = "INSTALL_BASE=$perl_dir";
+                local %ENV = %ENV;
+                $ENV{PERL_MB_OPT} = "--install_base $perl_dir";
+                $ENV{PERL_MM_OPT} = "INSTALL_BASE=$perl_dir";
                 $self->run_shell(
-                    "wget -O - http://cpanmin.us | $perl - App::cpanminus",
+                    "wget --no-check-certificate -O - http://cpanmin.us | $perl - App::cpanminus",
                 );
             }
         }

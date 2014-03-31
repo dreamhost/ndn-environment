@@ -64,10 +64,11 @@ sub steps {
         sub {
             my $perl_dir = NDN_ENV->perl_dir;
             my $vers     = NDN_ENV->perl_version;
+            my $archname = $ne->archname;
             die "Could not find perl verson." unless $vers;
             $self->run_shell(
                 "ln -s '$perl_dir/lib/site_perl/$vers' '$perl_dir/lib/perl5'",
-                "cp '$perl_dir/lib/$vers/x86_64-linux/Config.pm' '$perl_dir/lib/$vers/x86_64-linux/Config.pm.real'",
+                "cp '$perl_dir/lib/$vers/$archname/Config.pm' '$perl_dir/lib/$vers/$archname/Config.pm.real'",
             );
         },
         sub { chdir $cwd || die "Could not chdir to working directory '$cwd': $!" },

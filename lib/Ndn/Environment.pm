@@ -87,6 +87,18 @@ sub perl_version {
     return;
 }
 
+sub archname {
+    my $self = shift;
+
+    my $perl = join '/' => $self->perl_dir, 'bin/perl';
+    return unless -f $perl;
+
+    my $archname = `$perl -V | grep archname | head -n1`;
+    $archname =~ s{.* archname=(\S+).*}{$1}g;
+
+    return $archname;
+}
+
 sub push_builder {
     my $self     = shift;
     my ($module) = @_;

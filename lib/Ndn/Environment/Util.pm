@@ -91,6 +91,7 @@ sub run_in_env(&) {
     my $perl     = $ne->perl;
     my $tmp      = $ne->temp;
     my $dest     = $ne->dest;
+    my $archname = $ne->archname;
 
     system("cp -f '$perl_dir/bin/prove' '$tmp/prove'");
     system("perl -p -i -e 's{$dest/perl}{$perl_dir}g' '$tmp/prove'") && die $!;
@@ -102,18 +103,19 @@ sub run_in_env(&) {
 
     local %ENV = %ENV;
 
+
     delete $ENV{$_} for grep { m/PERL/ } keys %ENV;
     #$ENV{PERL_MB_OPT}  = "--install_base $perl_dir";
     #$ENV{PERL_MM_OPT}  = "INSTALL_BASE=$perl_dir";
-    $ENV{LDFLAGS}         = "-L$perl_dir/lib/$vers/x86_64-linux/CORE";
-    $ENV{LD_LIBRARY_PATH} = "$perl_dir/lib/$vers/x86_64-linux/CORE";
-    $ENV{LIBRARY_PATH}    = "$perl_dir/lib/$vers/x86_64-linux/CORE";
-    $ENV{CPATH}           = "$perl_dir/lib/$vers/x86_64-linux/CORE";
+    $ENV{LDFLAGS}         = "-L$perl_dir/lib/$vers/$archname/CORE";
+    $ENV{LD_LIBRARY_PATH} = "$perl_dir/lib/$vers/$archname/CORE";
+    $ENV{LIBRARY_PATH}    = "$perl_dir/lib/$vers/$archname/CORE";
+    $ENV{CPATH}           = "$perl_dir/lib/$vers/$archname/CORE";
     $ENV{PATH}            = "$tmp:$perl_dir/bin:$ENV{PATH}";
     $ENV{PERL5LIB}        = join ':' => (
-        "$perl_dir/lib/site_perl/$vers/x86_64-linux",
+        "$perl_dir/lib/site_perl/$vers/$archname",
         "$perl_dir/lib/site_perl/$vers",
-        "$perl_dir/lib/$vers/x86_64-linux",
+        "$perl_dir/lib/$vers/$archname",
         "$perl_dir/lib/$vers",
     );
 
@@ -140,11 +142,12 @@ sub run_with_config(&) {
     my $perl_dir = $ne->perl_dir;
     my $perl     = $ne->perl;
     my $dest     = $ne->dest;
+    my $archname = $ne->archname;
 
-    system("cp -f '$perl_dir/lib/$vers/x86_64-linux/Config.pm.real' '$perl_dir/lib/$vers/x86_64-linux/Config.pm'");
-    system("perl -p -i -e 's{$dest/perl}{$perl_dir}g' '$perl_dir/lib/$vers/x86_64-linux/Config.pm'")
+    system("cp -f '$perl_dir/lib/$vers/$archname/Config.pm.real' '$perl_dir/lib/$vers/$archname/Config.pm'");
+    system("perl -p -i -e 's{$dest/perl}{$perl_dir}g' '$perl_dir/lib/$vers/$archname/Config.pm'")
         && die "Could not munge Config.pm: $!";
-    system(qq|perl -p -i -e "s{(version => '[0-9\\.]+')}{\\1,\\nstartperl => '#!$perl'}g" '$perl_dir/lib/$vers/x86_64-linux/Config.pm'|)
+    system(qq|perl -p -i -e "s{(version => '[0-9\\.]+')}{\\1,\\nstartperl => '#!$perl'}g" '$perl_dir/lib/$vers/$archname/Config.pm'|)
         && die "Could not munge Config.pm: $!";
 
     $in_config = 1;
@@ -152,7 +155,7 @@ sub run_with_config(&) {
     my $success = eval { $code->(); 1 };
     my $error = $@;
 
-    system("cp -f '$perl_dir/lib/$vers/x86_64-linux/Config.pm.real' '$perl_dir/lib/$vers/x86_64-linux/Config.pm'");
+    system("cp -f '$perl_dir/lib/$vers/$archname/Config.pm.real' '$perl_dir/lib/$vers/$archname/Config.pm'");
 
     $in_config = 0;
 

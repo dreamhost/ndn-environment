@@ -45,7 +45,7 @@ sub inject_module {
         my $cwd = NDN_ENV->cwd;
         local %ENV = %ENV;
         my $archname = NDN_ENV->archname;
-        local $ENV{PERL5LIB} = "$cwd/envpan/lib/perl5:envpan/lib/perl5/$archlib:$ENV{PERL5LIB}";
+        local $ENV{PERL5LIB} = "$cwd/envpan/lib/perl5:envpan/lib/perl5/$archname:$ENV{PERL5LIB}";
 
         for my $mod (@modules) {
             my $src = $mod =~ '/' ? $mod : _module_url($mod);

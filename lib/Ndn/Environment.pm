@@ -93,7 +93,7 @@ sub archname {
     my $perl = join '/' => $self->perl_dir, 'bin/perl';
     return unless -f $perl;
 
-    my ($archname) = `perl -V:archname` =~ /='([^']+)'/;
+    my ($archname) = `$perl -V:archname` =~ /='([^']+)'/;
 
     return $archname;
 }

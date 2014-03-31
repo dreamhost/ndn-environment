@@ -64,7 +64,7 @@ sub steps {
         sub {
             my $perl_dir = NDN_ENV->perl_dir;
             my $vers     = NDN_ENV->perl_version;
-            my $archname = $ne->archname;
+            my $archname = NDN_ENV->archname;
             die "Could not find perl verson." unless $vers;
             $self->run_shell(
                 "ln -s '$perl_dir/lib/site_perl/$vers' '$perl_dir/lib/perl5'",

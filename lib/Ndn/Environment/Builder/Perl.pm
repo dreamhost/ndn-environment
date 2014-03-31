@@ -66,6 +66,7 @@ sub steps {
             my $vers     = NDN_ENV->perl_version;
             my $archname = NDN_ENV->archname;
             die "Could not find perl verson." unless $vers;
+            die "Could not find arch name." unless $archname;
             $self->run_shell(
                 "ln -s '$perl_dir/lib/site_perl/$vers' '$perl_dir/lib/perl5'",
                 "cp '$perl_dir/lib/$vers/$archname/Config.pm' '$perl_dir/lib/$vers/$archname/Config.pm.real'",

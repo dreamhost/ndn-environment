@@ -4,6 +4,8 @@ use warnings;
 
 use Getopt::Long qw(GetOptionsFromArray);
 
+use Carp qw/confess/;
+
 use Ndn::Environment::Util qw/accessors accessor/;
 use Ndn::Environment;
 
@@ -94,7 +96,7 @@ sub run_shell {
 
         if (system(@step)) {
             $self->on_error;
-            die "Error running " . join( ' ', @step ) . "\n(last \$! (may not be useful): $!)";
+            confess "Error running " . join( ' ', @step ) . "\n(last \$! (may not be useful): $!)";
         }
     }
 }

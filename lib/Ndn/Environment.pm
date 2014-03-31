@@ -8,6 +8,7 @@ our $VERSION = "0.001";
 use Ndn::Environment::Util qw/accessors accessor/;
 use Ndn::Environment::Config;
 
+use List::Util qw/first/;
 use File::Temp qw/tempdir/;
 use Cwd qw/getcwd/;
 use Module::Pluggable
@@ -90,9 +91,15 @@ sub perl_version {
 sub archname {
     my $self = shift;
 
-    my $perl = join '/' => $self->perl_dir, 'bin/perl';
+    my $vers = $self->perl_version;
+    my $perl_dir = $self->perl_dir;
+    my $perl = join '/' => $perl_dir, 'bin/perl';
     return unless -f $perl;
 
+    my $lib = "$perl_dir/lib/$vers/";
+    opendir( my $dh, $lib ) || die "Could not open $lib: $!";
+    my $alib = first { -f "$lib/$_/Config.pm" } readdir($dh);
+    local $ENV{PERL5LIB} = "$alib:$lib:$ENV{PERL5LIB}";
     my ($archname) = `$perl -V:archname` =~ /='([^']+)'/;
 
     return $archname;

@@ -3,12 +3,11 @@ use strict;
 use warnings;
 use feature qw/state/;
 
-our $VERSION = "0.001";
+our $VERSION = "1.000";
 
 use Ndn::Environment::Util qw/accessors accessor/;
 use Ndn::Environment::Config;
 
-use List::Util qw/first/;
 use File::Temp qw/tempdir/;
 use Cwd qw/getcwd/;
 use Module::Pluggable
@@ -20,20 +19,18 @@ accessors qw/cwd/;
 
 accessor builder_list => sub { {} };
 
-accessor build_dir => sub {
-    my $self = shift;
-    my $dir = join '/' => $self->cwd, 'build';
-    $dir =~ s{/+}{/}g;
-    mkdir $dir || die "Could not create build directory: $!";
-    return $dir;
-};
-
 accessor temp => sub {
-    my $temp = tempdir( CLEANUP => 1 );
+    my $temp = tempdir( CLEANUP => 0 );
 
     print "Using temp dir: $temp\n";
 
     return $temp;
+};
+
+accessor pkg_dir => sub {
+    my $self = shift;
+    my $tmp = $self->temp;
+    return "$tmp/package";
 };
 
 sub import {
@@ -74,37 +71,6 @@ sub init {
     $self->cwd( getcwd() );
 }
 
-sub perl_version {
-    my $self = shift;
-
-    my $perl = join '/' => $self->perl_dir, 'bin/perl';
-    return unless -f $perl;
-
-    my $ver = `$perl -v`;
-    if ( $ver =~ m/\(v(5\.\d+\.\d+)\)/ ) {
-        return $1;
-    }
-
-    return;
-}
-
-sub archname {
-    my $self = shift;
-
-    my $vers = $self->perl_version;
-    my $perl_dir = $self->perl_dir;
-    my $perl = join '/' => $perl_dir, 'bin/perl';
-    return unless -f $perl;
-
-    my $lib = "$perl_dir/lib/$vers/";
-    opendir( my $dh, $lib ) || die "Could not open $lib: $!";
-    my $alib = first { -f "$lib/$_/Config.pm" } readdir($dh);
-    local $ENV{PERL5LIB} = "$alib:$lib:$ENV{PERL5LIB}";
-    my ($archname) = `$perl -V:archname` =~ /='([^']+)'/;
-
-    return $archname;
-}
-
 sub push_builder {
     my $self     = shift;
     my ($module) = @_;
@@ -125,29 +91,56 @@ sub builder {
     return $self->builder_list->{$builder};
 }
 
-sub perl_dir {
+sub base_dir {
     my $self = shift;
+    return unless config;
+    my $base = $ENV{ENV_DEST} || config->{dest_dir} || "/opt/penv";
+    return $base;
+}
 
-    require Ndn::Environment::Builder::Perl;
-    my $perl = join '/' => (
-        $self->build_dir,
-        $self->dest,
-        Ndn::Environment::Builder::Perl->dest,
-    );
+accessor build_dir => sub {
+    my $self = shift;
+    my $build = $ENV{ENV_BUILD} || config->{build}->();
+    return $build;
+};
 
-    $perl =~ s{/+}{/}g;
+sub dest {
+    my $self = shift;
+    return unless config;
 
-    return $perl;
+    state $out;
+    unless($out) {
+        my $base = $self->base_dir;
+        my $build = $self->build_dir;
+        $out = "$base/$build";
+    }
+
+    return $out;
 }
 
 sub perl {
     my $self = shift;
-    return join '/' => $self->perl_dir, 'bin/perl';
+    my $dest = $self->dest;
+    my $bin_dir = $self->dest . '/perl/bin';
+    return "$bin_dir/perl";
 }
 
-sub dest {
+sub cpanm {
     my $self = shift;
-    return $ENV{ENV_DEST} || config->{dest_dir} || "/opt/plack";
+    my $dest = $self->dest;
+    my $bin_dir = $self->dest . '/perl/bin';
+    return "$bin_dir/cpanm";
+}
+
+sub archname {
+    my $self = shift;
+
+    my $perl = $self->perl;
+    return unless -f $perl;
+
+    my ($archname) = `$perl -V:archname` =~ /='([^']+)'/;
+
+    return $archname;
 }
 
 1;
@@ -281,10 +274,6 @@ Get the singleton
 
 Get the package for the specified builder
 
-=item $dir = $e->build_dir
-
-Get the directory that is used for builds.
-
 =item $dir = $e->temp
 
 Get the current temp directory.
@@ -300,18 +289,6 @@ Add a builder.
 =item $href = $e->builder_list
 
 Get the C<name => class> hashref of builders
-
-=item $perl_binary = $e->perl
-
-Get the path to the perl binary
-
-=item $perl_dir = $e->perl_dir
-
-Get the path to the perl directory (prefixed with the build dir)
-
-=item $perl_ver = $e->perl_version
-
-Get the perl version the environment has built.
 
 =item @list = $e->builders
 

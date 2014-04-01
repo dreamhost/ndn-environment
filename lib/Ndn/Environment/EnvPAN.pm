@@ -6,9 +6,9 @@ use Config;
 use base 'Exporter';
 use Carp qw/croak confess/;
 use File::Temp qw/tempfile/;
+use List::Util qw/first/;
 
 use Ndn::Environment;
-use Ndn::Environment::Util qw/run_in_config_env/;
 
 our @EXPORT_OK = qw(
     install_module
@@ -38,25 +38,28 @@ sub _module_url {
 sub inject_module {
     my @modules = @_;
 
-    my $inject = 'envpan/bin/orepan2-inject';
-    my $index  = 'envpan/bin/orepan2-indexer';
+    my $perl   = NDN_ENV->perl;
+    my $inject = 'local/bin/orepan2-inject';
+    my $index  = 'local/bin/orepan2-indexer';
 
-    run_in_config_env {
-        my $cwd = NDN_ENV->cwd;
-        local %ENV = %ENV;
-        my $archname = NDN_ENV->archname;
-        local $ENV{PERL5LIB} = "$cwd/envpan/lib/perl5:envpan/lib/perl5/$archname:$ENV{PERL5LIB}";
+    my $cwd = NDN_ENV->cwd;
+    local %ENV = %ENV;
+    my $plib = "$cwd/local/lib/perl5";
+    opendir(my $dh, $plib) || die "Could not open '$plib'";
+    my $alib = first { -e "$plib/$_/Mouse.pm" } readdir($dh);
+    close($dh);
+    local $ENV{PERL5LIB} = "$plib:$plib/$alib";
 
-        for my $mod (@modules) {
-            my $src = $mod =~ '/' ? $mod : _module_url($mod);
+    for my $mod (@modules) {
+        my $src = $mod =~ '/' ? $mod : _module_url($mod);
 
-            print "Injecting $mod...\n";
-            system("$inject --no-generate-index $src envpan") && die $!;
-        }
+        print "Injecting $mod ($src)...\n";
+        my $command = "$perl $inject --no-generate-index $src envpan";
+        system("$command") && die "PERL5LIB=\"$ENV{PERL5LIB}\" $command";
+    }
 
-        print "Rebuilding index...\n";
-        system("$index envpan >/dev/null 2>&1");
-    };
+    print "Rebuilding index...\n";
+    system("$perl $index envpan >/dev/null 2>&1");
 }
 
 sub install_module {
@@ -78,72 +81,65 @@ sub install_module {
     push @cpanm_args => "-l '$params{local_lib}'"
         if $params{local_lib};
 
-    run_in_config_env {
-        local %ENV = ( %ENV, %{$params{env}})
-            if $params{env};
+    local %ENV = ( %ENV, %{$params{env}})
+        if $params{env};
 
-        my $build_dir = NDN_ENV->build_dir;
-        my $perl_dir = NDN_ENV->perl_dir;
-        my $perl     = NDN_ENV->perl;
-        my $cpanm    = NDN_ENV->temp . '/cpanm';
+    my $perl  = NDN_ENV->perl;
+    my $cpanm = NDN_ENV->cpanm;
 
-        my $command = join " " => (
-            $perl,
-            $cpanm,
-            $params{cpanm_args} ? $params{cpanm_args} : (),
-            @cpanm_args,
-            $module,
-        );
+    my $command = join " " => (
+        $perl,
+        $cpanm,
+        $params{cpanm_args} ? $params{cpanm_args} : (),
+        @cpanm_args,
+        $module,
+    );
 
-        print "Installing Module: $module\n";
+    print "Installing Module: $module ($command)\n";
 
-        my ($th, $tf) = tempfile;
-        close($th);
+    my ($th, $tf) = tempfile;
+    close($th);
 
-        system( "$command 2>&1 | tee $tf" ) && die "tee command failed: $!";
+    system( "$command 2>&1 | tee $tf" ) && die "tee command failed: $!";
 
-        my (@fetch, @inst, $fail);
-        open( $th, '<', $tf ) || die "Could not open '$tf': $!";
-        while (my $line = <$th>) {
-            $fail ||= $line =~ m/Bailing out the installation/;
+    my (@fetch, @inst, $fail);
+    open( $th, '<', $tf ) || die "Could not open '$tf': $!";
+    while (my $line = <$th>) {
+        $fail ||= $line =~ m/Bailing out the installation/;
 
-            if( $line =~ m{Installing \S+ failed\. See (\S+) for details}) {
-                die "Error, check $1\n";
-            }
-
-            if( my @modules = ($line =~ m/Finding (\S+) \([^\)]*\) on mirror/g)) {
-                push @fetch => @modules;
-                next;
-            }
-
-            if ( my @modules = ($line =~ m/Module '(\S+)' is not installed/g)) {
-                push @inst => $1;
-            }
-
-            if ($line =~ m/Installed version \([^\)]*\) of (\S+) is not in range/) {
-                push @inst => $1;
-            }
+        if( $line =~ m{Installing \S+ failed\. See (\S+) for details}) {
+            die "Error, check $1\n";
         }
 
-        if (@inst || @fetch || $fail) {
-            die "cpanm failed" unless $params{auto_inject};
-
-            if (@inst || @fetch) {
-                my %seen;
-                my @need = grep { $_ && !$seen{$_}++ } @inst, @fetch;
-                print "Found deps: " . join( ", ", @need ) . "\n";
-                inject_module(@fetch);
-                install_module( $_, %params ) for grep { $_ ne $module } @need;
-                install_module( $module, %params );
-            }
-            else {
-                die "Error installing $module";
-            }
+        if( my @modules = ($line =~ m/Finding (\S+) \([^\)]*\) on mirror/g)) {
+            push @fetch => @modules;
+            next;
         }
 
-        system("perl -p -i -e 's{$build_dir}{}g' $perl_dir/bin/*")
-            && die $!;
-    };
+        if ( my @modules = ($line =~ m/Module '(\S+)' is not installed/g)) {
+            push @inst => $1;
+        }
+
+        if ($line =~ m/Installed version \([^\)]*\) of (\S+) is not in range/) {
+            push @inst => $1;
+        }
+    }
+
+    if (@inst || @fetch || $fail) {
+        die "cpanm failed" unless $params{auto_inject};
+
+        if (@inst || @fetch) {
+            my %seen;
+            my @need = grep { $_ && !$seen{$_}++ } @inst, @fetch;
+            print "Found deps: " . join( ", ", @need ) . "\n";
+            inject_module(@fetch);
+            install_module( $_, %params ) for grep { $_ ne $module } @need;
+            install_module( $module, %params );
+        }
+        else {
+            die "Error installing $module";
+        }
+    }
 
     $NESTING{$module}--;
 }

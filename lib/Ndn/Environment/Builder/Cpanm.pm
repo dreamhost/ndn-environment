@@ -3,7 +3,6 @@ use strict;
 use warnings;
 
 use Ndn::Environment qw/builder/;
-use Ndn::Environment::Util qw/run_in_config_env/;
 
 sub deps { qw/perl/ }
 
@@ -20,28 +19,19 @@ sub option_details {
 sub steps {
     my $self = shift;
 
-    my $perl_dir = NDN_ENV->perl_dir;
-    my $perl     = NDN_ENV->perl;
-    my $vers     = NDN_ENV->perl_version;
+    my $dest = NDN_ENV->dest;
+    my $bin_dir = NDN_ENV->dest . '/perl/bin';
+    my $perl = NDN_ENV->perl;
 
     return (
         sub {
             return if $self->args->{rebuild};
             print "Checking for cpanm...\n";
-            return unless -f "$perl_dir/bin/cpanm";
+            return unless -f "$bin_dir/cpanm";
             print "cpanm already built.\n";
             return 'done';
         },
-        sub {
-            run_in_config_env {
-                local %ENV = %ENV;
-                $ENV{PERL_MB_OPT} = "--install_base $perl_dir";
-                $ENV{PERL_MM_OPT} = "INSTALL_BASE=$perl_dir";
-                $self->run_shell(
-                    "wget --no-check-certificate -O - http://cpanmin.us | $perl - App::cpanminus",
-                );
-            }
-        }
+        "wget --no-check-certificate -O - http://cpanmin.us | $perl - App::cpanminus",
     );
 }
 

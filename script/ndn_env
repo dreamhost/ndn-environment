@@ -14,15 +14,6 @@ $env->load_plugins;
 my $cli = Ndn::Environment::CLI->singleton;
 $cli->load_plugins;
 
-my $vers = $env->perl_version;
-my $archname = $env->archname;
-if ($vers) {
-    my $perl_dir = $env->perl_dir;
-    my $perl     = $env->perl;
-    my $tmp      = $env->temp;
-    system("cp -f '$perl_dir/lib/$vers/$archname/Config.pm.real' '$perl_dir/lib/$vers/$archname/Config.pm'");
-}
-
 $cli->run(@ARGV);
 
 1;

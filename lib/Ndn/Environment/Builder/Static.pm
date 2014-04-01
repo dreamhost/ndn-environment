@@ -14,9 +14,9 @@ sub description {
 sub steps {
     my $self = shift;
 
-    my $build = NDN_ENV->build_dir;
+    my $pkg_dir = NDN_ENV->pkg_dir;
 
-    return ( "rsync -avP static/* $build/" );
+    return ( "rsync -avP static/* $pkg_dir/" );
 }
 
 1;

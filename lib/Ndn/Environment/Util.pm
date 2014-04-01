@@ -12,9 +12,6 @@ our @EXPORT_OK = qw{
     new
     accessor
     accessors
-    run_in_env
-    run_with_config
-    run_in_config_env
 };
 
 sub new {
@@ -75,103 +72,6 @@ sub accessors {
     }
 }
 
-sub run_in_env(&) {
-    my $code = shift;
-
-    state $in_env;
-    return $code->() if $in_env;
-
-    require Ndn::Environment;
-    my $ne = Ndn::Environment->singleton;
-
-    my $vers = $ne->perl_version;
-    die "Perl has not yet been built" unless $vers;
-
-    my $perl_dir = $ne->perl_dir;
-    my $perl     = $ne->perl;
-    my $tmp      = $ne->temp;
-    my $dest     = $ne->dest;
-    my $archname = $ne->archname;
-
-    system("cp -f '$perl_dir/bin/prove' '$tmp/prove'");
-    system("perl -p -i -e 's{$dest/perl}{$perl_dir}g' '$tmp/prove'") && die $!;
-
-    if ( -e "$perl_dir/bin/cpanm" ) {
-        system("cp -f '$perl_dir/bin/cpanm' '$tmp/cpanm'");
-        system("perl -p -i -e 's{#!$dest/perl/bin/perl}{#!$perl}g' '$tmp/cpanm'") && die $!;
-    }
-
-    local %ENV = %ENV;
-
-
-    delete $ENV{$_} for grep { m/PERL/ } keys %ENV;
-    #$ENV{PERL_MB_OPT}  = "--install_base $perl_dir";
-    #$ENV{PERL_MM_OPT}  = "INSTALL_BASE=$perl_dir";
-    $ENV{LDFLAGS}         = "-L$perl_dir/lib/$vers/$archname/CORE";
-    $ENV{LD_LIBRARY_PATH} = "$perl_dir/lib/$vers/$archname/CORE";
-    $ENV{LIBRARY_PATH}    = "$perl_dir/lib/$vers/$archname/CORE";
-    $ENV{CPATH}           = "$perl_dir/lib/$vers/$archname/CORE";
-    $ENV{PATH}            = "$tmp:$perl_dir/bin:$ENV{PATH}";
-    $ENV{PERL5LIB}        = join ':' => (
-        "$perl_dir/lib/site_perl/$vers/$archname",
-        "$perl_dir/lib/site_perl/$vers",
-        "$perl_dir/lib/$vers/$archname",
-        "$perl_dir/lib/$vers",
-    );
-
-    $in_env = 1;
-
-    $code->();
-
-    $in_env = 0;
-}
-
-sub run_with_config(&) {
-    my $code = shift;
-
-    state $in_config;
-    return $code->() if $in_config;
-
-    require Ndn::Environment;
-    my $ne = Ndn::Environment->singleton;
-
-    my $vers = $ne->perl_version;
-    die "Perl has not yet been built" unless $vers;
-
-    my $tmp      = $ne->temp;
-    my $perl_dir = $ne->perl_dir;
-    my $perl     = $ne->perl;
-    my $dest     = $ne->dest;
-    my $archname = $ne->archname;
-
-    system("cp -f '$perl_dir/lib/$vers/$archname/Config.pm.real' '$perl_dir/lib/$vers/$archname/Config.pm'");
-    system("perl -p -i -e 's{$dest/perl}{$perl_dir}g' '$perl_dir/lib/$vers/$archname/Config.pm'")
-        && die "Could not munge Config.pm: $!";
-    system(qq|perl -p -i -e "s{(version => '[0-9\\.]+')}{\\1,\\nstartperl => '#!$perl'}g" '$perl_dir/lib/$vers/$archname/Config.pm'|)
-        && die "Could not munge Config.pm: $!";
-
-    $in_config = 1;
-
-    my $success = eval { $code->(); 1 };
-    my $error = $@;
-
-    system("cp -f '$perl_dir/lib/$vers/$archname/Config.pm.real' '$perl_dir/lib/$vers/$archname/Config.pm'");
-
-    $in_config = 0;
-
-    die $error unless $success;
-
-    return 1;
-}
-
-sub run_in_config_env(&) {
-    my $code = shift;
-
-    run_in_env {
-        run_with_config { $code->() };
-    };
-}
-
 1;
 
 __END__
@@ -201,18 +101,6 @@ default value whenever no value is defined.
 =item accessors qw/NAME NAME .../
 
 Define multiple read-write accessors at once.
-
-=item run_in_env { ... }
-
-Run code in the environment (environment vars altered)
-
-=item run_with_config { ... }
-
-Run code with a modified Config.pm
-
-=item run_in_config_env { ... }
-
-Run code in the environment with %ENV modified and Config.pm altered.
 
 =back
 

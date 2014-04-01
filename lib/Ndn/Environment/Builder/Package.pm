@@ -20,18 +20,21 @@ sub option_details {
     );
 }
 
-sub deps { @{config->{package_builds}} }
+sub deps { @{config->{package}->{builds} || []} }
 
 sub steps {
     my $self = shift;
 
-    my $build = NDN_ENV->build_dir;
+    my $pkg_dir   = NDN_ENV->pkg_dir;
+    my $base_dir  = NDN_ENV->base_dir;
+    my $build_dir = NDN_ENV->build_dir;
+    my $dest      = NDN_ENV->dest;
 
-    my $name  = $self->args->{'name=s'}        || config->{package_name}        || 'ndn-environment';
-    my $maint = $self->args->{'maintainer=s'}  || config->{package_maintainer}  || 'nobody';
-    my $desc  = $self->args->{'description=s'} || config->{package_description} || 'no description';
-    my $deps  = $self->args->{'depends=s'}     || config->{package_depends};
-    my $ver   = $self->args->{'version=s'}     || config->{package_version}->();
+    my $name  = $self->args->{'name=s'}        || config->{package}->{name}        || 'ndn-environment';
+    my $maint = $self->args->{'maintainer=s'}  || config->{package}->{maintainer}  || 'nobody';
+    my $desc  = $self->args->{'description=s'} || config->{package}->{description} || 'no description';
+    my $deps  = $self->args->{'depends=s'}     || config->{package}->{depends};
+    my $ver   = $self->args->{'version=s'}     || config->{package}->{version}->();
 
     chomp(my $arch = `uname -m`);
     $arch = 'amd64' if $arch eq 'x86_64';
@@ -40,12 +43,16 @@ sub steps {
 
     return (
         sub {
-            return unless config->{package_prebuild};
-            config->{package_prebuild}->();
+            return unless config->{package}->{prebuild};
+            config->{package}->{prebuild}->();
         },
+        "mkdir -p $pkg_dir/$base_dir",
+        "mkdir -p $pkg_dir/$dest",
+        "mv '$dest' '$pkg_dir/$base_dir/'",
+        "cd '$pkg_dir/$base_dir/'; ln -s $build_dir/* ./",
         sub {
-            mkdir("$build/DEBIAN");
-            open( my $fh, '>', "$build/DEBIAN/control" )
+            mkdir("$pkg_dir/DEBIAN");
+            open( my $fh, '>', "$pkg_dir/DEBIAN/control" )
                 || die "Could not create control file: $!";
 
             print $fh <<"            EOT";
@@ -61,7 +68,7 @@ Description: $desc
 
             close($fh);
         },
-        "dpkg-deb -z8 -Zgzip --build '$build' '$name-$ver.deb'"
+        "dpkg-deb -z8 -Zgzip --build '$pkg_dir' '$name-$ver.deb'"
     );
 }
 

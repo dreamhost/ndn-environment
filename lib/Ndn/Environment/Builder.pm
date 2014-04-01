@@ -8,6 +8,7 @@ use Carp qw/confess/;
 
 use Ndn::Environment::Util qw/accessors accessor/;
 use Ndn::Environment;
+use Ndn::Environment::Config;
 
 accessor args => sub { {} };
 accessor argv => sub { [] };
@@ -70,13 +71,26 @@ sub on_error { }
 sub ready {
     my $self = shift;
     die "Perl does not appear to be built"
-        unless NDN_ENV->perl_version;
+        unless -f NDN_ENV->perl;
 }
 
 sub run {
     my $self = shift;
     chdir( NDN_ENV->cwd );
     $self->ready;
+
+    my $dest = NDN_ENV->dest;
+    my $vers = config->{perl}->{version} || "";
+    my $archname = NDN_ENV->archname || "";
+    my $alib = "$dest/perl/lib/$vers/$archname/CORE" || "";
+
+    local %ENV = (
+        %ENV,
+        LDFLAGS         => "-L$alib",
+        LD_LIBRARY_PATH => "$alib",
+        LIBRARY_PATH    => "$alib",
+        CPATH           => "$alib",
+    );
 
     for my $step ( $self->steps ) {
         if ( ref $step && ref $step eq 'CODE' ) {
@@ -145,7 +159,6 @@ Ndn::Environment::Builder - Base class for builders
         my $perl     = NDN_ENV->perl;
         my $perl_dir = NDN_ENV->perl_dir;
         my $tmp      = NDN_ENV->temp;
-        my $build    = NDN_ENV->build_dir;
         my $vers     = NDN_ENV->perl_version;
 
         return () if $self->already_installed;

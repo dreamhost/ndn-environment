@@ -13,7 +13,10 @@ accessor outfile => sub {
     return $outfile;
 };
 
-sub dest { 'perl' }
+accessor dest => sub {
+    my $self = shift;
+    return "perl";
+};
 
 sub description {
     return "Build a perl install.";
@@ -40,19 +43,22 @@ sub on_error {
 sub steps {
     my $self = shift;
 
-    return () if $self->check_built_version();
+    my $dest = NDN_ENV->dest . '/' . $self->dest;
+
+    return () if $self->check_built_version($dest);
 
     my $cwd    = NDN_ENV->cwd;
     my $tmp    = NDN_ENV->temp;
-    my $build  = NDN_ENV->build_dir;
     my $source = $self->source;
-    my $dest   = NDN_ENV->dest . '/' . $self->dest;
 
     my $outfile = $self->outfile;
     my $io = $self->args->{'verbose'} ? "" : " >> $outfile 2>&1";
-    my $config_args = config->{perl_config_args} || '';
+    my $config_args = config->{perl}->{config_args} ? join " " => @{config->{perl}->{config_args}} : "";
+
+    die "Dest cannot be root, really I mean it!" if !$dest || $dest =~ m{^/+$};
 
     return (
+        "rm -rf $dest",
         "mkdir '$tmp/perl'",
         "tar -zxf '$source' -C '$tmp/perl' --strip-components=1",
         sub { chdir "$tmp/perl" || die "Could not chdir to temp '$tmp/perl': $!" },
@@ -60,25 +66,14 @@ sub steps {
         "./Configure -de -Dprefix='$dest' -Accflags='-fPIC' $config_args $io",
         "make $io",
         $self->args->{'skip-perl-tests'} ? () : ("make test $io"),
-        "make install DESTDIR='$build' $io",
-        sub {
-            my $perl_dir = NDN_ENV->perl_dir;
-            my $vers     = NDN_ENV->perl_version;
-            my $archname = NDN_ENV->archname;
-            die "Could not find perl verson." unless $vers;
-            die "Could not find arch name." unless $archname;
-            $self->run_shell(
-                "ln -s '$perl_dir/lib/site_perl/$vers' '$perl_dir/lib/perl5'",
-                "cp '$perl_dir/lib/$vers/$archname/Config.pm' '$perl_dir/lib/$vers/$archname/Config.pm.real'",
-            );
-        },
+        "make install $io",
         sub { chdir $cwd || die "Could not chdir to working directory '$cwd': $!" },
     );
 }
 
 sub source {
     my $self    = shift;
-    my $version = $self->args->{'version=s'} || config->{perl_version};
+    my $version = $self->args->{'version=s'} || config->{perl}->{version};
 
     die "No perl version specified, and no source/perl.tar.gz file provided"
         unless $version || -e 'source/perl.tar.gz';
@@ -96,12 +91,13 @@ sub source {
 
 sub check_built_version {
     my $self = shift;
+    my ($dest) = @_;
+
+    return if $self->args->{rebuild};
 
     print "Checking for pre-built perl...\n";
 
-    return
-        unless NDN_ENV->perl_version
-        && !$self->args->{rebuild};
+    return unless -d $dest;
 
     print "Perl already built, not rebuilding.\n";
     return 'done';

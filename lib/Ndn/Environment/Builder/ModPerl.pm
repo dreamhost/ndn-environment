@@ -3,7 +3,6 @@ use strict;
 use warnings;
 
 use Ndn::Environment qw/builder/;
-use Ndn::Environment::Util qw/run_in_env run_in_config_env/;
 use Ndn::Environment::EnvPAN qw/install_module/;
 use Ndn::Environment::Config;
 
@@ -16,43 +15,33 @@ sub description {
 sub steps {
     my $self = shift;
 
-    my $perl     = NDN_ENV->perl;
-    my $perl_dir = NDN_ENV->perl_dir;
-    my $tmp      = NDN_ENV->temp;
-    my $build    = NDN_ENV->build_dir;
-    my $vers     = NDN_ENV->perl_version;
-    my $dest     = NDN_ENV->dest;
+    my $perl    = NDN_ENV->perl;
+    my $tmp     = NDN_ENV->temp;
+    my $dest    = NDN_ENV->dest;
+    my $pkg_dir = NDN_ENV->pkg_dir;
 
-    my $name = config->{modperl_rename};
-    my $apxs = config->{modperl_apxs};
+    my $name = config->{'modperl'}->{'rename'};
+    my $apxs = config->{'modperl'}->{'apxs'};
+    my $apr  = config->{'modperl'}->{'apr_config'};
+
     chomp(my $mod_path = `$apxs -q LIBEXECDIR`);
     chomp(my $inc_path = `$apxs -q INCLUDEDIR`);
 
-    if ( -e "$build/$mod_path/$name" ) {
-        print "mod_perl already built...\n";
-        return ();
-    }
+    my $extra = $apr ? "MP_APR_CONFIG=$apr" : "";
 
     return (
         "mkdir '$tmp/mod_perl'",
         "tar -zxf 'source/mod_perl.tar.gz' -C '$tmp/mod_perl' --strip-components=1",
         sub { chdir "$tmp/mod_perl" },
-        sub {
-            run_in_config_env {
-                $self->run_shell(
-                    qq{$perl Makefile.PL PREFIX="$dest/perl" MP_APXS="$apxs" PERL="$perl"},
-                    "perl -p -i -e 's{= $dest/perl/bin/perl}{= $perl}g' Makefile src/modules/perl/Makefile",
-                    "PERL='$perl' make",
-                    # Known bug with LWP prevents a single test from passing.
-                    # Commenting out tests for now, all others pass, no real
-                    # issue here.
-                    #"PERL='$perl' make test",
-                    "PERL='$perl' make install DESTDIR='$build'",
-                );
-            }
-        },
-        "mv '$build/$mod_path/mod_perl.so' '$build/$mod_path/$name'",
-        "rm -rf '$build/$inc_path'",
+        qq{$perl Makefile.PL PREFIX="$dest/perl" MP_APXS="$apxs" PERL="$perl" $extra},
+        "PERL='$perl' make",
+        # Known bug with LWP prevents a single test from passing.
+        # Commenting out tests for now, all others pass, no real
+        # issue here.
+        #"PERL='$perl' make test",
+        "PERL='$perl' make install DESTDIR='$pkg_dir'",
+        "mv '$pkg_dir/$mod_path/mod_perl.so' '$pkg_dir/$mod_path/$name'",
+        "rm -rf '$pkg_dir/$inc_path'",
     );
 }
 

@@ -48,7 +48,8 @@ sub steps {
         },
         "mkdir -p $pkg_dir/$base_dir",
         "mkdir -p $pkg_dir/$dest",
-        "mv '$dest' '$pkg_dir/$base_dir/'",
+        "rsync -avP '$dest' '$pkg_dir/$base_dir/'",
+        "rm -rf '$dest'",
         "cd '$pkg_dir/$base_dir/'; ln -s $build_dir/* ./",
         sub {
             mkdir("$pkg_dir/DEBIAN");

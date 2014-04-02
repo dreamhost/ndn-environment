@@ -38,6 +38,7 @@ sub _module_url {
 sub inject_module {
     my @modules = @_;
 
+    my $perl   = NDN_ENV->perl;
     my $inject = 'local/bin/orepan2-inject';
     my $index  = 'local/bin/orepan2-indexer';
 
@@ -53,12 +54,12 @@ sub inject_module {
         my $src = $mod =~ '/' ? $mod : _module_url($mod);
 
         print "Injecting $mod ($src)...\n";
-        my $command = "$inject --no-generate-index $src envpan";
+        my $command = "$perl $inject --no-generate-index $src envpan";
         system("$command") && die "PERL5LIB=\"$ENV{PERL5LIB}\" $command";
     }
 
     print "Rebuilding index...\n";
-    system("$index envpan >/dev/null 2>&1");
+    system("$perl $index envpan >/dev/null 2>&1");
 }
 
 sub install_module {

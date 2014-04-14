@@ -68,9 +68,9 @@ sub steps {
         sub { chdir "$tmp/perl" || die "Could not chdir to temp '$tmp/perl': $!" },
         sub { return if $self->args->{'verbose'}; print "Configuring and building perl, use 'tail -f $outfile' to watch\n" },
         "./Configure -de -Dprefix='$dest' -Accflags='-fPIC' $config_args $io",
-        "make $io",
-        $self->args->{'skip-perl-tests'} ? () : ("make test $io"),
-        "make install $io",
+        "make $make_args $io",
+        $self->args->{'skip-perl-tests'} ? () : ("make $make_args test $io"),
+        "make $make_args install $io",
         sub { chdir $cwd || die "Could not chdir to working directory '$cwd': $!" },
     );
 }

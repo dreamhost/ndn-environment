@@ -54,8 +54,12 @@ sub steps {
     my $outfile = $self->outfile;
     my $io = $self->args->{'verbose'} ? "" : " >> $outfile 2>&1";
     my $config_args = config->{perl}->{config_args} ? join " " => @{config->{perl}->{config_args}} : "";
+    my $make_args   = config->{perl}->{make_args}   ? join " " => @{config->{perl}->{make_args}}   : "";
+    my $env         = config->{perl}->{environment} || {};
 
     die "Dest cannot be root, really I mean it!" if !$dest || $dest =~ m{^/+$};
+
+    $self->environment($env);
 
     return (
         "rm -rf $dest",

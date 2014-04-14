@@ -12,6 +12,7 @@ use Ndn::Environment::Config;
 
 accessor args => sub { {} };
 accessor argv => sub { [] };
+accessor environment => sub { {} };
 
 sub new {
     my $class = shift;
@@ -84,15 +85,21 @@ sub run {
     my $archname = NDN_ENV->archname || "";
     my $alib = "$dest/perl/lib/$vers/$archname/CORE" || "";
 
+    my @steps = $self->steps;
+    my $env = $self->environment;
+    use Data::Dumper;
+    print STDERR "\n\n" .Dumper( $env ) . "\n\n";
+
     local %ENV = (
         %ENV,
         LDFLAGS         => "-L$alib",
         LD_LIBRARY_PATH => "$alib",
         LIBRARY_PATH    => "$alib",
         CPATH           => "$alib",
+        %$env,
     );
 
-    for my $step ( $self->steps ) {
+    for my $step ( @steps ) {
         if ( ref $step && ref $step eq 'CODE' ) {
             my $ret = $step->($self);
             return if $ret && $ret eq 'done';

@@ -87,8 +87,6 @@ sub run {
 
     my @steps = $self->steps;
     my $env = $self->environment;
-    use Data::Dumper;
-    print STDERR "\n\n" .Dumper( $env ) . "\n\n";
 
     local %ENV = (
         %ENV,

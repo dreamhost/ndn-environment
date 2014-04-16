@@ -25,6 +25,9 @@ sub description {
 sub steps {
     my $self = shift;
 
+    my $env = config->{modules_environment} || {};
+    $self->environment($env);
+
     return (
         sub {
             for my $module (@{config->{modules}}) {

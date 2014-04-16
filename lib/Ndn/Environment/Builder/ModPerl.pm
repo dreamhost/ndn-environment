@@ -23,6 +23,11 @@ sub steps {
     my $name = config->{'modperl'}->{'rename'};
     my $apxs = config->{'modperl'}->{'apxs'};
     my $apr  = config->{'modperl'}->{'apr_config'};
+    my $env  = config->{'modperl'}->{environment} || {};
+
+    my $make_args = config->{'modperl'}->{make_args} ? join " " => @{config->{'modperl'}->{make_args}} : "";
+
+    $self->environment($env);
 
     chomp(my $mod_path = `$apxs -q LIBEXECDIR`);
     chomp(my $inc_path = `$apxs -q INCLUDEDIR`);
@@ -34,12 +39,12 @@ sub steps {
         "tar -zxf 'source/mod_perl.tar.gz' -C '$tmp/mod_perl' --strip-components=1",
         sub { chdir "$tmp/mod_perl" },
         qq{$perl Makefile.PL PREFIX="$dest/perl" MP_APXS="$apxs" PERL="$perl" $extra},
-        "PERL='$perl' make",
+        "PERL='$perl' make $make_args",
         # Known bug with LWP prevents a single test from passing.
         # Commenting out tests for now, all others pass, no real
         # issue here.
         #"PERL='$perl' make test",
-        "PERL='$perl' make install DESTDIR='$pkg_dir'",
+        "PERL='$perl' make $make_args install DESTDIR='$pkg_dir'",
         "mv '$pkg_dir/$mod_path/mod_perl.so' '$pkg_dir/$mod_path/$name'",
         "rm -rf '$pkg_dir/$inc_path'",
     );

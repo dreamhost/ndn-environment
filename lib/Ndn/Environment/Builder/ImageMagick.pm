@@ -25,6 +25,10 @@ sub steps {
         return ();
     }
 
+    my $make_args = config->{'imagemagick'}->{make_args} ? join " " => @{config->{'modperl'}->{make_args}} : "";
+    my $env = config->{'imagemagick'}->{environment} || {};
+    $self->environment($env);
+
     return (
         "mkdir '$tmp/imagemagick'",
         "tar -zxf source/ImageMagick.tar.gz -C '$tmp/imagemagick' --strip-components=1",
@@ -35,8 +39,8 @@ sub steps {
             "--with-perl=$perl",
         ],
 
-        'make',
-        "make install",
+        "make $make_args",
+        "make $make_args install",
     );
 }
 

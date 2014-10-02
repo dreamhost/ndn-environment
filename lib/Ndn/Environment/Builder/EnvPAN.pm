@@ -26,8 +26,11 @@ sub steps {
             mkdir('local/lib/perl5');
 
             print "Bootstrapping envpan from cpan, these modules WILL NOT be added to your environment.\n";
-            install_module( 'OrePAN2',       from => 'cpan', local_lib => "$cwd/local");
-            install_module( 'MetaCPAN::API', from => 'cpan', local_lib => "$cwd/local");
+            install_module('Compress::Raw::Zlib',    from => 'cpan', local_lib => "$cwd/local");
+            install_module('WWW::Mechanize::Cached', from => 'cpan', local_lib => "$cwd/local");
+            install_module('OrePAN2',                from => 'cpan', local_lib => "$cwd/local");
+            install_module('MetaCPAN::Client',       from => 'cpan', local_lib => "$cwd/local");
+            install_module('MetaCPAN::API',          from => 'cpan', local_lib => "$cwd/local");
 
             # Do not inject if we have an authors dir
             return if -d "envpan/authors";

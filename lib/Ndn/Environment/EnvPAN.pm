@@ -46,7 +46,7 @@ sub inject_module {
     local %ENV = %ENV;
     my $plib = "$cwd/local/lib/perl5";
     opendir(my $dh, $plib) || die "Could not open '$plib'";
-    my $alib = first { -e "$plib/$_/Exporter.pm" } readdir($dh);
+    my $alib = first { -e "$plib/$_/Mouse.pm" } readdir($dh);
     close($dh);
     local $ENV{PERL5LIB} = "$plib:$plib/$alib";
 

@@ -26,7 +26,6 @@ sub steps {
             mkdir('local/lib/perl5');
 
             print "Bootstrapping envpan from cpan, these modules WILL NOT be added to your environment.\n";
-            install_module('Compress::Raw::Zlib',    from => 'cpan', local_lib => "$cwd/local");
             install_module('Moose',                  from => 'cpan', local_lib => "$cwd/local");
             install_module('WWW::Mechanize::Cached', from => 'cpan', local_lib => "$cwd/local");
             install_module('MetaCPAN::Client',       from => 'cpan', local_lib => "$cwd/local");

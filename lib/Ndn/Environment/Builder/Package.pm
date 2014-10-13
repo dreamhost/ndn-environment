@@ -50,7 +50,7 @@ sub steps {
         "mkdir -p $pkg_dir/$dest",
         "rsync -avP '$dest' '$pkg_dir/$base_dir/'",
         "rm -rf '$dest'",
-        "cd '$pkg_dir/$base_dir/'; ln -s $build_dir/* ./",
+#        "cd '$pkg_dir/$base_dir/'; ln -s $build_dir/* ./",
         sub {
             mkdir("$pkg_dir/DEBIAN");
             open( my $fh, '>', "$pkg_dir/DEBIAN/control" )

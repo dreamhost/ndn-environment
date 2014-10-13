@@ -18,7 +18,10 @@ sub steps {
     my $base_dir  = NDN_ENV->base_dir;
     my $build_dir = NDN_ENV->build_dir;
 
-    return ( "rsync -avP static/* $pkg_dir/$base_dir/$build_dir/" );
+    return (
+        "mkdir -p $pkg_dir/$base_dir/$build_dir/",
+        "rsync -avP static/* $pkg_dir/$base_dir/$build_dir/"
+    );
 }
 
 1;

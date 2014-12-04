@@ -59,7 +59,7 @@ sub inject_module {
     }
 
     print "Rebuilding index...\n";
-    system("$perl $index envpan >/dev/null 2>&1");
+    system("$perl $index --metacpan envpan >/dev/null 2>&1");
 }
 
 sub install_module {

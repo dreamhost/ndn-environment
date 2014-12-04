@@ -12,6 +12,8 @@ sub config { $CONFIG };
 if (-e "./env_config.pm") {
     $CONFIG = do './env_config.pm';
     die "No Config! ($@)" unless $CONFIG;
+    use Data::Dumper;
+    print "Config: " . Dumper($CONFIG);
 }
 else {
     die "Could not find ./env_config.pm!\n"

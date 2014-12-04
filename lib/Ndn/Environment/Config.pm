@@ -9,8 +9,13 @@ our $CONFIG;
 
 sub config { $CONFIG };
 
-$CONFIG = do './env_config.pm'
-    if -e "./env_config.pm";
+if (-e "./env_config.pm") {
+    $CONFIG = do './env_config.pm';
+    die "No Config! ($@)" unless $CONFIG;
+}
+else {
+    die "Could not find ./env_config.pm!\n"
+}
 
 1;
 

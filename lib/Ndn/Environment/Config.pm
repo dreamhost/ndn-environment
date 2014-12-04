@@ -10,8 +10,14 @@ our $CONFIG;
 sub config { $CONFIG };
 
 if (-e "./env_config.pm") {
+    local $@ = "";
     $CONFIG = do './env_config.pm';
-    die "No Config! ($@)" unless $CONFIG;
+    my $error = $@;
+    unless ($CONFIG) {
+        print STDERR "No config after loading ./env_config.pm\n";
+        system('cat ./env_config.pm');
+        die "No Config! ($error)\n";
+    }
     use Data::Dumper;
     print "Config: " . Dumper($CONFIG);
 }

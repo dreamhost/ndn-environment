@@ -36,12 +36,29 @@ sub _module_url {
     return $url;
 }
 
+sub perl5lib(&) {
+    my ($run) = @_;
+
+    my $cwd = NDN_ENV->cwd;
+    my $plib = "$cwd/local/lib/perl5";
+    opendir(my $dh, $plib) || die "Could not open '$plib'";
+    my $alib = first { -e "$plib/$_/Moose.pm" || -e "$plib/$_/Mouse.pm" } readdir($dh);
+    close($dh);
+
+    local %ENV = %ENV;
+    local $ENV{PERL5LIB} = "$plib:$plib/$alib";
+
+    $run->();
+}
+
 sub rebuild_index {
     my $perl   = NDN_ENV->perl;
     my $index  = 'local/bin/orepan2-indexer';
 
-    print "Rebuilding index...\n";
-    system("$perl $index --metacpan envpan >/dev/null 2>&1");
+    perl5lib {
+        print "Rebuilding index...\n";
+        system("$perl $index --metacpan envpan");
+    };
 }
 
 sub inject_module {
@@ -50,21 +67,15 @@ sub inject_module {
     my $perl   = NDN_ENV->perl;
     my $inject = 'local/bin/orepan2-inject';
 
-    my $cwd = NDN_ENV->cwd;
-    local %ENV = %ENV;
-    my $plib = "$cwd/local/lib/perl5";
-    opendir(my $dh, $plib) || die "Could not open '$plib'";
-    my $alib = first { -e "$plib/$_/Mouse.pm" } readdir($dh);
-    close($dh);
-    local $ENV{PERL5LIB} = "$plib:$plib/$alib";
+    perl5lib {
+        for my $mod (@modules) {
+            my $src = $mod =~ '/' ? $mod : _module_url($mod);
 
-    for my $mod (@modules) {
-        my $src = $mod =~ '/' ? $mod : _module_url($mod);
-
-        print "Injecting $mod ($src)...\n";
-        my $command = "$perl $inject --no-generate-index $src envpan";
-        system("$command") && die "PERL5LIB=\"$ENV{PERL5LIB}\" $command";
-    }
+            print "Injecting $mod ($src)...\n";
+            my $command = "$perl $inject --no-generate-index $src envpan";
+            system("$command") && die "PERL5LIB=\"$ENV{PERL5LIB}\" $command";
+        }
+    };
 
     rebuild_index();
 }

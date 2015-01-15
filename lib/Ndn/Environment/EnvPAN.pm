@@ -13,6 +13,7 @@ use Ndn::Environment;
 our @EXPORT_OK = qw(
     install_module
     inject_module
+    rebuild_index
 );
 
 my %NESTING;
@@ -35,12 +36,19 @@ sub _module_url {
     return $url;
 }
 
+sub rebuild_index {
+    my $perl   = NDN_ENV->perl;
+    my $index  = 'local/bin/orepan2-indexer';
+
+    print "Rebuilding index...\n";
+    system("$perl $index --metacpan envpan >/dev/null 2>&1");
+}
+
 sub inject_module {
     my @modules = @_;
 
     my $perl   = NDN_ENV->perl;
     my $inject = 'local/bin/orepan2-inject';
-    my $index  = 'local/bin/orepan2-indexer';
 
     my $cwd = NDN_ENV->cwd;
     local %ENV = %ENV;
@@ -58,8 +66,7 @@ sub inject_module {
         system("$command") && die "PERL5LIB=\"$ENV{PERL5LIB}\" $command";
     }
 
-    print "Rebuilding index...\n";
-    system("$perl $index --metacpan envpan >/dev/null 2>&1");
+    rebuild_index();
 }
 
 sub install_module {

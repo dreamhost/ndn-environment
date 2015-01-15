@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Ndn::Environment qw/builder/;
-use Ndn::Environment::EnvPAN qw/install_module/;
+use Ndn::Environment::EnvPAN qw/install_module rebuild_index/;
 use Ndn::Environment::Config;
 
 sub deps { qw/perl cpanm envpan/ }
@@ -30,6 +30,8 @@ sub steps {
 
     return (
         sub {
+            rebuild_index();
+
             for my $module (@{config->{modules}}) {
                 next unless $module;
 

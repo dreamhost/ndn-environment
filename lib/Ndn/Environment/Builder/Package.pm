@@ -52,8 +52,8 @@ sub steps {
         "rm -rf '$dest'",
 #        "cd '$pkg_dir/$base_dir/'; ln -s $build_dir/* ./",
         sub {
-            mkdir("$pkg_dir/DEBIAN");
-            open( my $fh, '>', "$pkg_dir/DEBIAN/control" )
+            mkdir("$pkg_dir/debian");
+            open( my $fh, '>', "$pkg_dir/debian/control" )
                 || die "Could not create control file: $!";
 
             print $fh <<"            EOT";

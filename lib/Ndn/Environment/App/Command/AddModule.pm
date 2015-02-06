@@ -1,17 +1,16 @@
-package Ndn::Environment::Command::AddModule;
+package Ndn::Environment::App::Command::AddModule;
+
 use strict;
 use warnings;
 
-use Ndn::Environment::CLI qw/command/;
+use Ndn::Environment::App -command;
 use Ndn::Environment::EnvPAN qw/inject_module install_module/;
-use Getopt::Long qw(GetOptionsFromArray);
 
-sub short_desc { "Add a module to the EnvPAN cpan mirror" }
-sub usage      { "$0 addmodule Some::Module" }
+sub usage_desc { "$0 addmodule Some::Module" }
 
-sub run {
-    my $self = shift;
-    inject_module(@_);
+sub execute {
+    my ($self, $opt, $args) = @_;
+    inject_module(@$args);
 }
 
 1;
@@ -20,7 +19,7 @@ __END__
 
 =head1 NAME
 
-Ndn::Environment::Command::AddModule - Command to add modules to the envpan
+Ndn::Environment::App::Command::AddModule - Command to add modules to the envpan
 
 =head1 COPYRIGHT
 

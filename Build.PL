@@ -8,6 +8,7 @@ my $build = Module::Build->new(
     dist_author => 'New Dream Network',
     create_readme => 1,
     requires => {
+        'autodie'           => '2.26',
         'Carp'              => 0,
         'Cwd'               => 0,
         'File::Temp'        => 0,

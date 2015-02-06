@@ -1,6 +1,8 @@
 package Ndn::Environment::Builder::Perl;
 use strict;
 use warnings;
+use autodie;
+
 use File::Temp qw/tempfile/;
 
 use Ndn::Environment qw/builder/;

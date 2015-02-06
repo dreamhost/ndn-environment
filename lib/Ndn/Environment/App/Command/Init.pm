@@ -1,17 +1,17 @@
-package Ndn::Environment::Command::Init;
+package Ndn::Environment::App::Command::Init;
+
 use strict;
 use warnings;
 
-use Ndn::Environment::CLI qw/command/;
+use Ndn::Environment::App -command;
 
-sub short_desc { "Initialize an Ndn::Environment directory" }
-sub usage      { "$0 init [PATH]\n\nPATH defaults to '.'" }
+sub usage_desc { "$0 init [PATH]\n\nPATH defaults to '.'" }
 
 my %FILES = (
     source          => {},
     'env_config.pm' => <<'    EOT',
 {
-    # Version of perl to download and use 
+    # Version of perl to download and use
     perl_version => undef, # Example: 5.16.3
 
     # Add 'modperl' to this if you want it:
@@ -23,7 +23,7 @@ my %FILES = (
     package_maintainer  => "nobody special",
     package_description => "ndn-environment by nobody special.",
     package_depends     => "",
-    package_version     => sub { time() }, # Set version to build timestamp 
+    package_version     => sub { time() }, # Set version to build timestamp
 
     modperl_apxs   => '/usr/bin/apxs2',
     modperl_rename => 'mod_perl_custom_BUILD.so',
@@ -37,9 +37,10 @@ my %FILES = (
     EOT
 );
 
-sub run {
-    my $self = shift;
-    my ($root) = @_;
+sub execute {
+    my ($self, $opt, $args) = @_;
+
+    my ($root) = @$args;
     $root ||= '.';
 
     if ( !-e $root ) {
@@ -83,7 +84,8 @@ __END__
 
 =head1 NAME
 
-Ndn::Environment::Command::Init - Initialize a new environment
+Ndn::Environment::App::Command::Init - Initialize a new environment
+
 
 =head1 COPYRIGHT
 

@@ -1,14 +1,16 @@
-package Ndn::Environment::Command::Build;
+package Ndn::Environment::App::Command::Build;
+
 use strict;
 use warnings;
 
+use Ndn::Environment::App -command;
+
 use Ndn::Environment;
-use Ndn::Environment::CLI qw/command/;
 use Ndn::Environment::Util qw/accessor/;
 
 sub short_desc { "Build an environment" }
 
-sub usage {
+sub usage_desc {
     my $self = shift;
 
     my $items = join "" => map { $self->builder_usage($_) } sort $self->NDN_ENV->builders;
@@ -48,9 +50,9 @@ sub option_string {
     return sprintf( "        --%-10s %s", $option, $builder->option_usage($option) );
 }
 
-sub run {
-    my $self = shift;
-    my ( $item, @args ) = @_;
+sub execute {
+    my ($self, $opt, $args) = @_;
+    my ( $item, @args ) = @$args;
     die "Nothing to build.\n" unless $item;
 
     my $last = $self->NDN_ENV->builder($item);
@@ -113,7 +115,7 @@ __END__
 
 =head1 NAME
 
-Ndn::Environment::Command::Build - Command to build things.
+Ndn::Environment::App::Command::Build - Command to build things.
 
 =head1 COPYRIGHT
 

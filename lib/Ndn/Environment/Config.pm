@@ -2,27 +2,34 @@ package Ndn::Environment::Config;
 use strict;
 use warnings;
 
+use v5.10;
+
 use base 'Exporter';
 
 our @EXPORT = qw/config/;
-our $CONFIG;
 
-sub config { $CONFIG };
+sub config {
 
+    state $CONFIG = do {
 if (-e "./env_config.pm") {
     local $@ = "";
-    $CONFIG = do './env_config.pm';
+    my $cfg = do './env_config.pm';
     my $error = $@;
-    unless ($CONFIG) {
+    unless ($cfg) {
         print STDERR "No config after loading ./env_config.pm\n";
         system('cat ./env_config.pm');
         die "No Config! ($error)\n";
     }
     use Data::Dumper;
-    print "Config: " . Dumper($CONFIG);
+    print "Config: " . Dumper($cfg);
 }
 else {
     die "Could not find ./env_config.pm!\n"
+}
+
+    };
+
+    return $CONFIG;
 }
 
 1;

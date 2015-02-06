@@ -9,6 +9,7 @@ my $build = Module::Build->new(
     create_readme => 1,
     requires => {
         'autodie'           => '2.26',
+        'App::Cmd'          => '0.326',
         'Carp'              => 0,
         'Cwd'               => 0,
         'File::Temp'        => 0,

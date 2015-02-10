@@ -11,22 +11,21 @@ our @EXPORT = qw/config/;
 sub config {
 
     state $CONFIG = do {
-if (-e "./env_config.pm") {
-    local $@ = "";
-    my $cfg = do './env_config.pm';
-    my $error = $@;
-    unless ($cfg) {
-        print STDERR "No config after loading ./env_config.pm\n";
-        system('cat ./env_config.pm');
-        die "No Config! ($error)\n";
-    }
-    use Data::Dumper;
-    print "Config: " . Dumper($cfg);
-}
-else {
-    die "Could not find ./env_config.pm!\n"
-}
-
+        if (-e "./env_config.pm") {
+            local $@ = "";
+            my $cfg = do './env_config.pm';
+            my $error = $@;
+            unless ($cfg) {
+                print STDERR "No config after loading ./env_config.pm\n";
+                system('cat ./env_config.pm');
+                die "No Config! ($error)\n";
+            }
+            use Data::Dumper;
+            print "Config: " . Dumper($cfg);
+        }
+        else {
+            die "Could not find ./env_config.pm!\n"
+        }
     };
 
     return $CONFIG;

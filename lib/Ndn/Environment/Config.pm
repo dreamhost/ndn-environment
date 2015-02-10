@@ -1,31 +1,22 @@
 package Ndn::Environment::Config;
+
+use v5.10;
 use strict;
 use warnings;
 
-use v5.10;
+use parent 'Exporter';
 
-use base 'Exporter';
+use Try::Tiny;
 
 our @EXPORT = qw/config/;
 
 sub config {
 
-    state $CONFIG = do {
-        if (-e "./env_config.pm") {
-            local $@ = "";
-            my $cfg = do './env_config.pm';
-            my $error = $@;
-            unless ($cfg) {
-                print STDERR "No config after loading ./env_config.pm\n";
-                system('cat ./env_config.pm');
-                die "No Config! ($error)\n";
-            }
-            use Data::Dumper;
-            print "Config: " . Dumper($cfg);
-        }
-        else {
-            die "Could not find ./env_config.pm!\n"
-        }
+    state $CONFIG = try {
+        do './env_config.pm';
+    }
+    catch {
+        die "Could not load ./env_config.pm: $_";
     };
 
     return $CONFIG;

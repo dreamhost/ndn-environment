@@ -9,6 +9,7 @@ my $build = Module::Build->new(
     create_readme => 1,
     requires => {
         'autodie'           => '2.26',
+        'parent'            => 0,
         'App::Cmd'          => '0.326',
         'Carp'              => 0,
         'Cwd'               => 0,
@@ -16,6 +17,7 @@ my $build = Module::Build->new(
         'Getopt::Long'      => 0,
         'Module::Pluggable' => 0,
         'Scalar::Util'      => 0,
+        'Try::Tiny'         => 0,
     },
     build_requires => {
         'Test::Simple' => '0.88',

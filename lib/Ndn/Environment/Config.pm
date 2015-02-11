@@ -7,13 +7,18 @@ use warnings;
 use parent 'Exporter';
 
 use Try::Tiny;
+        use Data::Dumper;
 
 our @EXPORT = qw/config/;
 
 sub config {
-
     state $CONFIG = try {
-        do './env_config.pm';
+        my $content = do './env_config.pm';
+        die "No config: " . ($@ || $!) unless $content;
+
+        print Dumper($content);
+
+        return $content;
     }
     catch {
         die "Could not load ./env_config.pm: $_";

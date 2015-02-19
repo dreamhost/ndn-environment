@@ -23,7 +23,10 @@ my $build = Module::Build->new(
         'Try::Tiny'             => 0,
     },
     build_requires => {
-        'Test::Simple' => '0.88',
+        'aliased'             => 0,
+        'Test::File'          => '1.41',
+        'Test::Simple'        => '0.88',
+        'Test::TempDir::Tiny' => '0.003',
     },
 );
 

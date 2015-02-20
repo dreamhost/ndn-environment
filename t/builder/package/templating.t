@@ -41,5 +41,5 @@ Section:      devel
 Maintainer:   Captain Jack Harkness
 Architecture: here
 Version:      there
-Depends:      ${shlibs:Depends}, stuff, more-stuff
+Depends:      stuff, more-stuff
 Description:  yaaaaaay

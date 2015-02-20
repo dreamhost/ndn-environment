@@ -21,9 +21,11 @@ my $build = Module::Build->new(
         'Scalar::Util'          => 0,
         'Template::Tiny'        => '1.12',
         'Try::Tiny'             => 0,
+        'URI::Fetch'            => '0.10',
     },
     build_requires => {
         'aliased'             => 0,
+        'File::chdir'         => '0.1010',
         'Test::File'          => '1.41',
         'Test::Simple'        => '0.88',
         'Test::TempDir::Tiny' => '0.003',

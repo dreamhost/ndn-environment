@@ -1,10 +1,17 @@
 package Ndn::Environment::Builder::Cpanm;
+
 use strict;
 use warnings;
 
 use Ndn::Environment qw/builder/;
 
-sub deps { qw/perl/ }
+use constant CPANM_URL =>
+    'https://raw.githubusercontent.com/miyagawa/cpanminus/devel/cpanm';
+
+use Path::Tiny;
+use URI::Fetch;
+
+sub deps { () }
 
 sub ready {  }
 
@@ -21,8 +28,7 @@ sub option_details {
 sub steps {
     my $self = shift;
 
-    my $dest = NDN_ENV->dest;
-    my $bin_dir = NDN_ENV->dest . '/perl/bin';
+    my $bin_dir = path NDN_ENV->dest, qw{ perl bin };
     my $perl = NDN_ENV->perl;
 
     return (
@@ -33,7 +39,26 @@ sub steps {
             print "cpanm already built.\n";
             return 'done';
         },
-        "wget --no-check-certificate -O - http://cpanmin.us | $perl - App::cpanminus",
+        # make sure the path exists
+        sub { $bin_dir->mkpath },
+        sub {
+
+            ### get our fatpacked cpanm...
+            my $res = URI::Fetch->fetch(CPANM_URL)
+                or die URI::Fetch->errstr;
+            # this is noted in the URI::Fetch SYNOPSIS, though I'm unclear as
+            # to what might actually cause this to happen and not trigger the
+            # above.
+            die 'failed to fetch cpanm!'
+                unless $res->is_success;
+
+            ### and put it in the right place...
+            my $cpanm_target = path $bin_dir, 'cpanm';
+            $cpanm_target->spew($res->content);
+            $cpanm_target->chmod(0755);
+
+            return;
+        },
     );
 }
 

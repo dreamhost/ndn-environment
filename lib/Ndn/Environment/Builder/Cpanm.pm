@@ -56,8 +56,6 @@ sub steps {
             my $cpanm_target = path $bin_dir, 'cpanm';
             $cpanm_target->spew($res->content);
             $cpanm_target->chmod(0755);
-
-            return;
         },
     );
 }

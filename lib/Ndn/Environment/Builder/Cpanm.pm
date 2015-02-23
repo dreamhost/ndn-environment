@@ -6,6 +6,8 @@ use Ndn::Environment qw/builder/;
 
 sub deps { qw/perl/ }
 
+sub ready {  }
+
 sub description {
     return "Download and install cpanm.";
 }

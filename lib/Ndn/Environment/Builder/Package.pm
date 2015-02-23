@@ -119,5 +119,5 @@ Section:      devel
 Maintainer:   [% maint %]
 Architecture: [% arch %]
 Version:      [% ver  %]
-Depends:      ${shlibs:Depends}, [% deps %]
+Depends:      [% deps %]
 Description:  [% desc %]

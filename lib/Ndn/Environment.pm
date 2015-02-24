@@ -15,7 +15,7 @@ use Module::Pluggable
     search_path => 'Ndn::Environment::Builder',
     require     => 1;
 
-accessors qw/cwd/;
+accessor cwd => sub { getcwd };
 
 accessor builder_list => sub { {} };
 
@@ -64,13 +64,6 @@ sub singleton {
     return $singleton;
 }
 
-sub init {
-    my $self   = shift;
-    my %params = @_;
-
-    $self->cwd( getcwd() );
-}
-
 sub push_builder {
     my $self     = shift;
     my ($module) = @_;
@@ -91,12 +84,12 @@ sub builder {
     return $self->builder_list->{$builder};
 }
 
-sub base_dir {
+accessor base_dir => sub {
     my $self = shift;
     return unless config;
     my $base = $ENV{ENV_DEST} || config->{dest_dir} || "/opt/penv";
     return $base;
-}
+};
 
 accessor build_dir => sub {
     my $self = shift;

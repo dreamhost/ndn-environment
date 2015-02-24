@@ -16,6 +16,8 @@ my $build = Module::Build->new(
         'Data::Section::Simple' => '0.07',
         'File::Temp'            => 0,
         'Getopt::Long'          => 0,
+        'HTTP::Tiny'            => '0.054',
+        'IO::Socket::SSL'       => '1.56',
         'Module::Pluggable'     => 0,
         'Path::Tiny'            => '0.061',
         'Scalar::Util'          => 0,
@@ -24,6 +26,7 @@ my $build = Module::Build->new(
     },
     build_requires => {
         'aliased'             => 0,
+        'File::chdir'         => '0.1010',
         'Test::File'          => '1.41',
         'Test::Simple'        => '0.88',
         'Test::TempDir::Tiny' => '0.003',

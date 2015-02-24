@@ -26,11 +26,12 @@ $root->mkpath;
 path($root, 'env_config.pm')->spew(get_data_section('env_config.pm'));
 
 {
-    local $CWD = "$root"; # 't/live/package';
+    local $CWD = "$root";
 
     my $pkg_dir = path $test_target, 'package';
     my $pkged_perl = path $pkg_dir, $test_target, qw{ build perl bin perl };
 
+    ### override our paths...
     Builder->NDN_ENV->temp($test_target);
     Builder->NDN_ENV->base_dir($test_target);
     Builder->NDN_ENV->build_dir('build');
@@ -46,7 +47,6 @@ path($root, 'env_config.pm')->spew(get_data_section('env_config.pm'));
 
     $builder->run;
 
-    my $installed_cpanm = "$test_target/build/perl/bin/cpanm";
     my $debian_dir = path $test_target, qw{ package DEBIAN };
     file_exists_ok "$debian_dir/control";
     file_exists_ok $pkged_perl;
@@ -61,7 +61,7 @@ __DATA__
 {
     testing => 1,
     package => {
-    
+
         description => 'A nice, little package!',
         depends     => 'libxml2',
         version     => sub { 42 },

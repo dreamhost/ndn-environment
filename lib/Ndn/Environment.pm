@@ -116,7 +116,7 @@ accessor bin_dir => sub { path shift->dest, qw { perl bin } };
 accessor perl    => sub { path shift->bin_dir, 'perl'       };
 accessor cpanm   => sub { path shift->bin_dir, 'cpanm'      };
 
-sub archname {
+accessor archname => sub {
     my $self = shift;
 
     my $perl = $self->perl;
@@ -125,7 +125,7 @@ sub archname {
     my ($archname) = `$perl -V:archname` =~ /='([^']+)'/;
 
     return $archname;
-}
+};
 
 1;
 

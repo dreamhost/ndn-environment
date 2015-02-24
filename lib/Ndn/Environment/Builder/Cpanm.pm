@@ -9,7 +9,8 @@ use constant CPANM_URL =>
     'https://raw.githubusercontent.com/miyagawa/cpanminus/devel/cpanm';
 
 use Path::Tiny;
-use URI::Fetch;
+use HTTP::Tiny;
+use IO::Socket::SSL;
 
 sub deps { () }
 
@@ -44,17 +45,15 @@ sub steps {
         sub {
 
             ### get our fatpacked cpanm...
-            my $res = URI::Fetch->fetch(CPANM_URL)
-                or die URI::Fetch->errstr;
-            # this is noted in the URI::Fetch SYNOPSIS, though I'm unclear as
-            # to what might actually cause this to happen and not trigger the
-            # above.
-            die 'failed to fetch cpanm!'
-                unless $res->is_success;
+            my $res = HTTP::Tiny->new->get(CPANM_URL);
+
+            ### result: "$res->{status} $res->{reason}"
+            die 'Failed to fetch cpanm!'
+                unless $res->{success};
 
             ### and put it in the right place...
             my $cpanm_target = path $bin_dir, 'cpanm';
-            $cpanm_target->spew($res->content);
+            $cpanm_target->spew($res->{content});
             $cpanm_target->chmod(0755);
         },
     );

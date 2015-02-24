@@ -52,6 +52,7 @@ sub steps {
             arch  => $arch,
             ver   => $ver,
             deps  => $deps,
+            desc  => $desc,
         });
     };
 

@@ -10,6 +10,7 @@ use Ndn::Environment::Config;
 
 use File::Temp qw/tempdir/;
 use Cwd qw/getcwd/;
+use Path::Tiny;
 use Module::Pluggable
     sub_name    => 'load_plugins',
     search_path => 'Ndn::Environment::Builder',
@@ -111,21 +112,11 @@ sub dest {
     return $out;
 }
 
-sub perl {
-    my $self = shift;
-    my $dest = $self->dest;
-    my $bin_dir = $self->dest . '/perl/bin';
-    return "$bin_dir/perl";
-}
+accessor bin_dir => sub { path shift->dest, qw { perl bin } };
+accessor perl    => sub { path shift->bin_dir, 'perl'       };
+accessor cpanm   => sub { path shift->bin_dir, 'cpanm'      };
 
-sub cpanm {
-    my $self = shift;
-    my $dest = $self->dest;
-    my $bin_dir = $self->dest . '/perl/bin';
-    return "$bin_dir/cpanm";
-}
-
-sub archname {
+accessor archname => sub {
     my $self = shift;
 
     my $perl = $self->perl;
@@ -134,7 +125,7 @@ sub archname {
     my ($archname) = `$perl -V:archname` =~ /='([^']+)'/;
 
     return $archname;
-}
+};
 
 1;
 

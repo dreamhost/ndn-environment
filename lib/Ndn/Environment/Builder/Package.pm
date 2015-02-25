@@ -95,6 +95,8 @@ sub _debian_file {
 
 1;
 
+__DATA__
+
 =head1 NAME
 
 Ndn::Environment::Builder::Package - Build the environment into a package
@@ -110,8 +112,6 @@ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 FOR A PARTICULAR PURPOSE. See the license for more details.
 
 =cut
-
-__DATA__
 
 @@ debian/control
 Package:      [% name %]

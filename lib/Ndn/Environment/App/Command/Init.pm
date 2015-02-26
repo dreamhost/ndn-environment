@@ -19,10 +19,10 @@ my %FILES = (
 
     # Packaging details:
     package_type        => 'deb',
-    package_name        => "ndn-environment",
-    package_maintainer  => "nobody special",
-    package_description => "ndn-environment by nobody special.",
-    package_depends     => "",
+    package_name        => 'ndn-environment',
+    package_maintainer  => 'someone FABULOUS!',
+    package_description => 'ndn-environment by someone FABULOUS!',
+    package_depends     => q{},
     package_version     => sub { time() }, # Set version to build timestamp
 
     modperl_apxs   => '/usr/bin/apxs2',

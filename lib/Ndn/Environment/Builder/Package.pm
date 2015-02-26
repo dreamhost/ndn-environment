@@ -185,6 +185,7 @@ if [ "$1" = "upgrade" ]; then
 
     # this is suffient to ensure the symlink is pointing to the right place
     echo "Updating symlink to: $_new_target"
+    rm [% current_symlink %]
     ln -sf "$_new_target" [% current_symlink %]
 fi
 

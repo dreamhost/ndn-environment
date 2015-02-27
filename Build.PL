@@ -26,6 +26,7 @@ my $build = Module::Build->new(
     },
     build_requires => {
         'aliased'             => 0,
+        'Devel::CheckBin'     => '0.02',
         'File::chdir'         => '0.1010',
         'Test::File'          => '1.41',
         'Test::Simple'        => '0.88',

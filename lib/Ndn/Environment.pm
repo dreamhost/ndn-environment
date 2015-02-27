@@ -85,24 +85,11 @@ sub builder {
     return $self->builder_list->{$builder};
 }
 
-accessor base_dir => sub {
-    my $self = shift;
-    return unless config;
-    my $base = $ENV{ENV_DEST} || config->{dest_dir} || "/opt/penv";
-    return $base;
-};
-
-accessor build_dir => sub {
-    my $self = shift;
-    my $build = $ENV{ENV_BUILD} || config->{build}->();
-    return $build;
-};
-
 sub dest {
     my $self = shift;
     return unless config;
 
-    state $out;
+    my $out;
     unless($out) {
         my $base = $self->base_dir;
         my $build = $self->build_dir;
@@ -112,9 +99,11 @@ sub dest {
     return $out;
 }
 
-accessor bin_dir => sub { path shift->dest, qw { perl bin } };
-accessor perl    => sub { path shift->bin_dir, 'perl'       };
-accessor cpanm   => sub { path shift->bin_dir, 'cpanm'      };
+accessor base_dir  => sub { $ENV{ENV_DEST} || config->{dest_dir} || '/opt/penv' };
+accessor build_dir => sub { $ENV{ENV_BUILD} || config->{build}->()              };
+accessor bin_dir   => sub { path shift->dest, qw { perl bin }                   };
+accessor perl      => sub { path shift->bin_dir, 'perl'                         };
+accessor cpanm     => sub { path shift->bin_dir, 'cpanm'                        };
 
 accessor archname => sub {
     my $self = shift;

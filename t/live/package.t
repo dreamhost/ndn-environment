@@ -47,9 +47,16 @@ path($root, 'env_config.pm')->spew(get_data_section('env_config.pm'));
 
     $builder->run;
 
+    ### check out our package files and control files...
     my $debian_dir = path $test_target, qw{ package DEBIAN };
-    file_exists_ok "$debian_dir/control";
+    my @scriptlets = map { path $debian_dir, $_ } qw{ prerm postrm postinst };
     file_exists_ok $pkged_perl;
+    file_exists_ok "$debian_dir/control";
+    file_mode_is "$debian_dir/control", 0644;
+    do { file_exists_ok $_; file_mode_is $_, 0755 }
+        for @scriptlets;
+
+    ### make sure the actual package was built...
     file_exists_ok "$root/ndn-environment-42.deb";
 }
 

@@ -48,7 +48,7 @@ else {
     # NOTE: build out a chroot!
 
     # NOTE: nix this
-    #plan skip_all => 'Non-travis support not yet implemented.';
+    plan skip_all => 'Non-travis support not yet implemented.';
 }
 
 my $test_target = tempdir;

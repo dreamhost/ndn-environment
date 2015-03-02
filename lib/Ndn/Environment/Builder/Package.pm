@@ -84,7 +84,7 @@ sub steps {
         sub { $_build_scriptlet->('prerm')    },
 
         # FIXME note, this should probably be debuild
-        "dpkg-deb -z8 -Zgzip --build '$pkg_dir' '$name-$ver.deb'"
+        "fakeroot dpkg-deb -z8 -Zgzip --build '$pkg_dir' '$name-$ver.deb'"
     );
 }
 

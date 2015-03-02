@@ -88,6 +88,7 @@ subtest 'build our packages' => sub {
         Builder->NDN_ENV->bin_dir($bin_dir);
         Builder->NDN_ENV->perl($built_perl);
         $built_perl->touch->spew('hi there!');
+        $built_perl->chmod(0775);
         $builder->run;
         file_exists_ok $pkged_perl;
     };
@@ -122,6 +123,17 @@ subtest 'validate install symlink' => sub {
     file_exists_ok $v42_target;
     file_not_exists_ok $v43_target;
     symlink_target_is $current_symlink, $v42_target;
+};
+
+subtest 'validate installed file ownership and permissions' => sub {
+
+    # juuuuust to ensure we're using fakeroot correctly
+    note "we have $v42 installed right now; check for that dummy perl";
+    my $pkg_perl = path $v42_target, qw{ perl bin perl };
+    file_exists_ok $pkg_perl;
+    file_mode_is $pkg_perl, 0755;
+    owner_is $pkg_perl => 'root';
+    group_is $pkg_perl => 'root';
 };
 
 subtest 'validate upgrade symlink' => sub {

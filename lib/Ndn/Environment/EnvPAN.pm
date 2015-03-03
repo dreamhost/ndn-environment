@@ -1,6 +1,8 @@
 package Ndn::Environment::EnvPAN;
+
 use strict;
 use warnings;
+use autodie;
 
 use Config;
 use base 'Exporter';
@@ -45,7 +47,6 @@ sub perl5lib(&) {
     my $alib = first { -e "$plib/$_/Moose.pm" || -e "$plib/$_/Mouse.pm" } readdir($dh);
     close($dh);
 
-    local %ENV = %ENV;
     local $ENV{PERL5LIB} = "$plib:$plib/$alib";
 
     $run->();

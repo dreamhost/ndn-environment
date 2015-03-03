@@ -77,13 +77,14 @@ sub steps {
         },
         "rsync -avP '$dest' '$pkg_dir/$base_dir/'",
         "rm -rf '$dest'",
+        "chmod -Rf a+rX,u+w,g-w,o-w $pkg_dir/",
         $_build_control,
         sub { $_build_scriptlet->('postinst') },
         sub { $_build_scriptlet->('postrm')   },
         sub { $_build_scriptlet->('prerm')    },
 
         # FIXME note, this should probably be debuild
-        "dpkg-deb -z8 -Zgzip --build '$pkg_dir' '$name-$ver.deb'"
+        "fakeroot dpkg-deb -z8 -Zgzip --build '$pkg_dir' '$name-$ver.deb'"
     );
 }
 

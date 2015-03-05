@@ -18,6 +18,7 @@ my $build = Module::Build->new(
         'Getopt::Long'          => 0,
         'HTTP::Tiny'            => '0.054',
         'IO::Socket::SSL'       => '1.56',
+        'MetaCPAN::API'         => 0,
         'Module::Pluggable'     => 0,
         'Path::Tiny'            => '0.061',
         'Scalar::Util'          => 0,

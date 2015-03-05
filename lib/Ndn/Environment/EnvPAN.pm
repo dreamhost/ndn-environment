@@ -1,12 +1,15 @@
 package Ndn::Environment::EnvPAN;
+
 use strict;
 use warnings;
+use autodie;
 
 use Config;
 use base 'Exporter';
 use Carp qw/croak confess/;
 use File::Temp qw/tempfile/;
 use List::Util qw/first/;
+use MetaCPAN::API;
 
 use Ndn::Environment;
 
@@ -21,19 +24,11 @@ my %NESTING;
 sub _module_url {
     my ($source) = @_;
 
-    my $perl = NDN_ENV->perl;
+    my $c = MetaCPAN::API->new;
+    my $dist = $c->module($source)->{distribution} || die "No dist found";
+    my $rel = $c->release( distribution => $dist )  || die "No release found";
 
-    my $code = <<"    EOT";
-        require MetaCPAN::API;
-        my \$c = MetaCPAN::API->new;
-        my \$dist = \$c->module("$source")->{distribution} || die "No dist found";
-        my \$rel = \$c->release( distribution => \$dist )  || die "No release found";
-        print \$rel->{download_url} . "\\n";
-    EOT
-
-    chomp( my $url = `$perl -e '$code'` );
-
-    return $url;
+    return $rel->{download_url};
 }
 
 sub perl5lib(&) {
@@ -45,7 +40,6 @@ sub perl5lib(&) {
     my $alib = first { -e "$plib/$_/Moose.pm" || -e "$plib/$_/Mouse.pm" } readdir($dh);
     close($dh);
 
-    local %ENV = %ENV;
     local $ENV{PERL5LIB} = "$plib:$plib/$alib";
 
     $run->();

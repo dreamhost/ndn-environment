@@ -10,6 +10,7 @@ use Carp qw/croak confess/;
 use File::Temp qw/tempfile/;
 use List::Util qw/first/;
 use MetaCPAN::API;
+use Path::Tiny;
 
 use Ndn::Environment;
 
@@ -35,10 +36,11 @@ sub perl5lib(&) {
     my ($run) = @_;
 
     my $cwd = NDN_ENV->cwd;
-    my $plib = "$cwd/local/lib/perl5";
-    opendir(my $dh, $plib) || die "Could not open '$plib'";
-    my $alib = first { -e "$plib/$_/Moose.pm" || -e "$plib/$_/Mouse.pm" } readdir($dh);
-    close($dh);
+    my $plib = path $cwd, qw{ local lib perl5 };
+    my $alib =
+        first { -e "$plib/$_/Moose.pm" || -e "$plib/$_/Mouse.pm" }
+        $plib->children
+    ;
 
     local $ENV{PERL5LIB} = "$plib:$plib/$alib";
 

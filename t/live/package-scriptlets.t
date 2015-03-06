@@ -103,7 +103,7 @@ subtest 'build our packages' => sub {
 
 my $build_dir = path $root, 'build';
 
-subtest 'sanity checking' => sub {
+my $_sanity = sub {
     file_not_exists_ok $build_dir;
     file_exists_ok $v42;
     file_exists_ok $v43;
@@ -112,6 +112,8 @@ subtest 'sanity checking' => sub {
 my $current_symlink = path $test_target, 'current';
 my $v42_target      = path $test_target, 'build-42';
 my $v43_target      = path $test_target, 'build-43';
+
+subtest 'sanity checking pre-install/upgrade/remove tests' => $_sanity;
 
 subtest 'validate install symlink' => sub {
 

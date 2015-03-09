@@ -6,7 +6,7 @@ use Ndn::Environment qw/builder/;
 use Ndn::Environment::EnvPAN qw/install_module/;
 use Ndn::Environment::Config;
 
-sub deps { qw/perl cpanm envpan/ }
+sub deps { qw/perl cpanm/ }
 
 sub description {
     return "Build mod_perl.";

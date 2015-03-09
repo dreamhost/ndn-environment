@@ -15,7 +15,6 @@ require_ok 'Ndn::Environment::App::Command::Init';
 
 require_ok 'Ndn::Environment::Builder';
 require_ok 'Ndn::Environment::Builder::Cpanm';
-require_ok 'Ndn::Environment::Builder::EnvPAN';
 require_ok 'Ndn::Environment::Builder::Modules';
 require_ok 'Ndn::Environment::Builder::Package';
 require_ok 'Ndn::Environment::Builder::Perl';

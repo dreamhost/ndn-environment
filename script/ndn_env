@@ -3,9 +3,11 @@
 use strict;
 use warnings;
 
+
 # Use the libs specific to this repo
 BEGIN { unshift @INC => './lib' if -e './env_config.pm' && -d './lib' }
 
+use Ndn::Environment::Deps bootstrap => 'prompt';
 use Ndn::Environment;
 use Ndn::Environment::App;
 

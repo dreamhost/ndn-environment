@@ -10,6 +10,7 @@ use Carp qw/croak confess/;
 use File::Temp qw/tempfile/;
 use List::Util qw/first/;
 use MetaCPAN::API;
+use IPC::Cmd qw/can_run/;
 
 use Ndn::Environment;
 
@@ -31,45 +32,25 @@ sub _module_url {
     return $rel->{download_url};
 }
 
-sub perl5lib(&) {
-    my ($run) = @_;
-
-    my $cwd = NDN_ENV->cwd;
-    my $plib = "$cwd/local/lib/perl5";
-    opendir(my $dh, $plib) || die "Could not open '$plib'";
-    my $alib = first { -e "$plib/$_/Moose.pm" || -e "$plib/$_/Mouse.pm" } readdir($dh);
-    close($dh);
-
-    local $ENV{PERL5LIB} = "$plib:$plib/$alib";
-
-    $run->();
-}
-
 sub rebuild_index {
-    my $perl   = NDN_ENV->perl;
-    my $index  = 'local/bin/orepan2-indexer';
+    my $index = can_run('orepan2-indexer') || die "Could not find orepan2-indexer!";
 
-    perl5lib {
-        print "Rebuilding index...\n";
-        system("$perl $index --metacpan envpan");
-    };
+    print "Rebuilding index...\n";
+    system("$index --metacpan envpan");
 }
 
 sub inject_module {
     my @modules = @_;
 
-    my $perl   = NDN_ENV->perl;
-    my $inject = 'local/bin/orepan2-inject';
+    my $inject = can_run('orepan2-inject') || die "Could not find orepan2-inject!";
 
-    perl5lib {
-        for my $mod (@modules) {
-            my $src = $mod =~ '/' ? $mod : _module_url($mod);
+    for my $mod (@modules) {
+        my $src = $mod =~ '/' ? $mod : _module_url($mod);
 
-            print "Injecting $mod ($src)...\n";
-            my $command = "$perl $inject --no-generate-index $src envpan";
-            system("$command") && die "PERL5LIB=\"$ENV{PERL5LIB}\" $command";
-        }
-    };
+        print "Injecting $mod ($src)...\n";
+        my $command = "$inject --no-generate-index $src envpan";
+        system("$command") && die $command;
+    }
 
     rebuild_index();
 }

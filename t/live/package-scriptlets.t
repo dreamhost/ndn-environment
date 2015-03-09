@@ -101,22 +101,23 @@ subtest 'build our packages' => sub {
     file_exists_ok $v43 = path "$root/ndn-environment-43.deb";
 };
 
-my $build_dir = path $root, 'build';
 
-my $_sanity = sub {
-    file_not_exists_ok $build_dir;
-    file_exists_ok $v42;
-    file_exists_ok $v43;
-};
-
+my $build_dir       = path $root, 'build';
 my $current_symlink = path $test_target, 'current';
 my $v42_target      = path $test_target, 'build-42';
 my $v43_target      = path $test_target, 'build-43';
 
-subtest 'sanity checking pre-install/upgrade/remove tests' => $_sanity;
+# a simple set of tests we can use to validate that our environment is what we
+# expect before running the actual tests
+my $_sanity = sub {
+    file_not_exists_ok $_
+        for $build_dir, $current_symlink, $v42_target, $v43_target;
+    file_exists_ok $v42;
+    file_exists_ok $v43;
+};
 
-subtest 'validate install symlink' => sub {
-
+# package install tests that we're going to run more than once
+my $_install_pkg_v42 = sub {
     diag "installing $v42";
     system "sudo dpkg -i $v42";
 
@@ -127,9 +128,39 @@ subtest 'validate install symlink' => sub {
     symlink_target_is $current_symlink, $v42_target;
 };
 
-subtest 'validate installed file ownership and permissions' => sub {
+# do our package remove; ensure things look as we expect
+my $_remove_pkg = sub {
 
-    # juuuuust to ensure we're using fakeroot correctly
+    diag "removing ndn-environment";
+    system 'sudo dpkg -r ndn-environment';
+
+    file_not_exists_ok $v42_target;
+    file_not_exists_ok $v43_target;
+    file_not_exists_ok $current_symlink;
+};
+
+#
+# first round; install w/dangling symlink, remove pkg
+#
+
+subtest 'sanity checking pre-install-with-dangling-link tests' => $_sanity;
+subtest 'create dangling symlink'                              => sub {
+    $current_symlink->parent->mkpath;
+    symlink "$v43_target", "$current_symlink";
+    file_is_symlink_ok $current_symlink;
+    symlink_target_dangles_ok $current_symlink;
+    symlink_target_is $current_symlink, $v43_target;
+};
+subtest 'validate install with dangling symlink'           => $_install_pkg_v42;
+subtest 'remove package and validate'                      => $_remove_pkg;
+
+#
+# second round; full install/upgrade/remove cycle
+#
+
+subtest 'sanity checking pre-install/upgrade/remove tests'  => $_sanity;
+subtest 'validate install symlink'                          => $_install_pkg_v42;
+subtest 'validate installed file ownership and permissions' => sub {
     note "we have $v42 installed right now; check for that dummy perl";
     my $pkg_perl = path $v42_target, qw{ perl bin perl };
     file_exists_ok $pkg_perl;
@@ -139,7 +170,6 @@ subtest 'validate installed file ownership and permissions' => sub {
 };
 
 subtest 'validate upgrade symlink' => sub {
-
     diag "upgrading to $v43";
     system "sudo dpkg -i $v43";
 
@@ -150,15 +180,7 @@ subtest 'validate upgrade symlink' => sub {
     symlink_target_is $current_symlink, $v43_target;
 };
 
-subtest 'validate remove symlink' => sub {
-
-    diag "removing ndn-environment";
-    system 'sudo dpkg -r ndn-environment';
-
-    file_not_exists_ok $v42_target;
-    file_not_exists_ok $v43_target;
-    file_not_exists_ok $current_symlink;
-};
+subtest 'validate remove symlink' => $_remove_pkg;
 
 done_testing;
 

@@ -38,7 +38,7 @@ sub perl5lib(&) {
     my $plib = "$cwd/local/lib/perl5";
     opendir(my $dh, $plib) || die "Could not open '$plib'";
     my $alib = first { -e "$plib/$_/Moose.pm" || -e "$plib/$_/Mouse.pm" } readdir($dh);
-    close($dh);
+    closedir($dh);
 
     local $ENV{PERL5LIB} = "$plib:$plib/$alib";
 

@@ -18,6 +18,10 @@ use autodie;
 # to be able to run these tests locally.  (Local runs are not presently
 # implemented, however, and likely wouldn't do anyone on fubar any good
 # anyways.)
+#
+# If you *do* want to run this locally before the fakechroot bits are
+# implemented, it's sufficient to set the Travis environment variable to a
+# truthy value, and run the tests (pay attention for sudo prompts!).
 
 use Test::More;
 use Test::File;

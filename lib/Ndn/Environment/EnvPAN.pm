@@ -34,11 +34,10 @@ sub _module_url {
 sub perl5lib(&) {
     my ($run) = @_;
 
+    my $perl   = NDN_ENV->perl;
     my $cwd = NDN_ENV->cwd;
     my $plib = "$cwd/local/lib/perl5";
-    opendir(my $dh, $plib) || die "Could not open '$plib'";
-    my $alib = first { -e "$plib/$_/Moose.pm" || -e "$plib/$_/Mouse.pm" } readdir($dh);
-    close($dh);
+    chomp(my $alib = `$perl -e 'use Config; print $Config{archname}'`);
 
     local $ENV{PERL5LIB} = "$plib:$plib/$alib";
 
